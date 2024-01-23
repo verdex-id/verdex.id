@@ -20,7 +20,7 @@ export async function GET(request) {
 
   return Response.json(contohData);
 }
-
+// tes
 /**
  * Endpoint POST /api/course
  * Create new course
