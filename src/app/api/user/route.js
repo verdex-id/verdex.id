@@ -29,7 +29,7 @@ export async function POST(request) {
 }
 
 /**
- * Endpoint GET /api/user?_id=<yourshittyid>
+ * Endpoint GET /api/user?_id=<user_id>
  * get an user
  */
 export async function GET(request) {
