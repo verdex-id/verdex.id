@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,9 +20,11 @@ export default function LoginPage() {
           </div>
           <div className="relative group">
             <input type="email" name="email" placeholder="Email" />
-            <img
+            <Image
               src="/icons/email.svg"
               alt=""
+              width={24}
+              height={0}
               className="absolute right-0 top-0 my-auto h-full w-6 mr-8"
             />
           </div>
@@ -31,9 +34,11 @@ export default function LoginPage() {
               name="password"
               placeholder="Password"
             />
-            <img
+            <Image
               src="/icons/eyepassword.svg"
               alt=""
+              width={24}
+              height={0}
               className="absolute right-0 top-0 my-auto h-full w-6 mr-8 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             />
@@ -52,7 +57,13 @@ export default function LoginPage() {
 
         {/* Illustration */}
         <div>
-          <img src="/vectors/login.svg" alt="" />
+          <Image
+            src="/vectors/login.svg"
+            alt=""
+            width={0}
+            height={0}
+            className="w-full"
+          />
         </div>
         {/* End Illustration */}
       </div>

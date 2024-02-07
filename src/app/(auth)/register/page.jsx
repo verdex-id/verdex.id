@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,17 +20,21 @@ export default function Register() {
           </div>
           <div className="relative group">
             <input type="text" name="username" placeholder="Username" />
-            <img
+            <Image
               src="/icons/user.svg"
               alt=""
+              width={24}
+              height={0}
               className="absolute right-0 top-0 my-auto h-full w-6 mr-8"
             />
           </div>
           <div className="relative group">
             <input type="email" name="email" placeholder="Email" />
-            <img
+            <Image
               src="/icons/email.svg"
               alt=""
+              width={24}
+              height={0}
               className="absolute right-0 top-0 my-auto h-full w-6 mr-8"
             />
           </div>
@@ -39,9 +44,11 @@ export default function Register() {
               name="password"
               placeholder="Password"
             />
-            <img
+            <Image
               src="/icons/eyepassword.svg"
               alt=""
+              width={24}
+              height={0}
               className="absolute right-0 top-0 my-auto h-full w-6 mr-8 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             />
@@ -60,7 +67,13 @@ export default function Register() {
 
         {/* Illustration */}
         <div>
-          <img src="/vectors/register.svg" alt="" />
+          <Image
+            src="/vectors/register.svg"
+            alt=""
+            height={0}
+            width={0}
+            className="w-full"
+          />
         </div>
         {/* End Illustration */}
       </div>
