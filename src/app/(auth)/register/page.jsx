@@ -9,7 +9,7 @@ export default function Register() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-8 text-left w-full max-w-screen-xl mx-auto min-h-dvh pt-[128px]">
+      <div className="px-8 grid grid-cols-1 md:grid-cols-2 gap-8 text-left w-full max-w-screen-xl mx-auto min-h-dvh pt-[128px]">
         {/* Login Form */}
         <form action="" className="space-y-8">
           <div>
@@ -53,7 +53,7 @@ export default function Register() {
               onClick={() => setShowPassword(!showPassword)}
             />
           </div>
-          <div className="space-x-4">
+          <div className="gap-4 flex flex-wrap items-center">
             <button className="btn btn-1">Create Account</button>
             <span>
               Already have an account?{" "}
