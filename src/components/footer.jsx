@@ -1,4 +1,6 @@
 import React from "react";
+import Image from 'next/image';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -8,10 +10,12 @@ const Footer = () => {
         {/* Company Logo Section */}
         <div className="flex flex-col md:flex-row md:justify-between items-start">
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-center">
-            <img
+            <Image
               src="/logo/verdex.svg"
               alt="Company Logo"
-              className="w-138 h-112 mb-4 md:mb-0 mt-16"
+              width={138}
+              height={112}
+              className="mb-4 md:mb-0 mt-16"
             />
           </div>
 
@@ -19,22 +23,18 @@ const Footer = () => {
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
             <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Resources
-              <img
+              <Image
                 src="/icons/arrow.svg"
                 alt="Arrow"
-                className="ml-2 w-4 h-4"
+                width={17}
+                height={17}
+                className="ml-4 mb-2"
               />
             </h3>
             <ul className="list-none text-gray-300 py-4 gap-8 text-left">
-              <a href="">
-                <li>Resource 1</li>
-              </a>
-              <a href="">
-                <li>Resource 2</li>
-              </a>
-              <a href="">
-                <li>Resource 3</li>
-              </a>
+              <li><Link href="/resource-1">Resource 1</Link></li>
+              <li><Link href="/resource-2">Resource 2</Link></li>
+              <li><Link href="/resource-3">Resource 3</Link></li>
             </ul>
           </div>
           {/* Resources Section End*/}
@@ -43,25 +43,19 @@ const Footer = () => {
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
             <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Navigation
-              <img
+              <Image
                 src="/icons/arrow.svg"
                 alt="Arrow"
-                className="ml-2 w-4 h-4"
+                width={17}
+                height={17}
+                className="ml-4 mb-2"
               />
             </h3>
             <ul className="list-none text-gray-300 text-left gap-4 mt-3">
-              <a href="">
-                <li>Home</li>
-              </a>
-              <a href="">
-                <li>About Us</li>
-              </a>
-              <a href="">
-                <li>Course</li>
-              </a>
-              <a href="">
-                <li>Our Team</li>
-              </a>
+              <li><Link href="/">Home</Link></li>
+              <li><Link href="/about">About Us</Link></li>
+              <li><Link href="/course">Course</Link></li>
+              <li><Link href="/team">Our Team</Link></li>
             </ul>
           </div>
           {/* Navigation Section End*/}
@@ -70,22 +64,18 @@ const Footer = () => {
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
             <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Social Media
-              <img
+              <Image
                 src="/icons/arrow.svg"
                 alt="Arrow"
-                className="ml-2 w-4 h-4"
+                width={17}
+                height={17}
+                className="ml-4 mb-2"
               />
             </h3>
             <ul className="list-none text-gray-300 gap-4 mt-3 text-left">
-              <a href="">
-                <li>Linkedin</li>
-              </a>
-              <a href="">
-                <li>Github</li>
-              </a>
-              <a href="">
-                <li>Discord</li>
-              </a>
+              <li><Link href="/linkedin">Linkedin</Link></li>
+              <li><Link href="/github">Github</Link></li>
+              <li><Link href="/discord">Discord</Link></li>
             </ul>
           </div>
         </div>
