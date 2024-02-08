@@ -13,7 +13,7 @@ const Footer = () => {
 
           {/* Resources Section */}
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
-            <h3 className="font-poppins text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
+            <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Resources
               <img src="/images/arrow.svg" alt="Arrow" className="ml-2 w-4 h-4" />
             </h3>
@@ -27,7 +27,7 @@ const Footer = () => {
 
           {/* Navigation Section */}
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
-            <h3 className="font-poppins text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
+            <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Navigation
               <img src="/images/arrow.svg" alt="Arrow" className="ml-2 w-4 h-4" />
             </h3>
@@ -42,7 +42,7 @@ const Footer = () => {
 
           {/* Social Media Section */}
           <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
-            <h3 className="font-poppins text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
+            <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
               Social Media
               <img src="/images/arrow.svg" alt="Arrow" className="ml-2 w-4 h-4" />
             </h3>
@@ -65,7 +65,7 @@ const Footer = () => {
 
         {/* Copyright Section */}
         <div className='w-[199px] h-[52px] top-[896px] left-[627px] p-18 pr-32 pb-18 pl-32 border-2 border-dotted border-white rounded-full gap-10 mx-auto inline-flex items-center justify-center mt-8'>
-          <p className="flex items-center font-Poppins text-lg text-center h-full">
+          <p className="flex items-center text-lg text-center h-full">
             Copyright&copy; <span className="ml-1">2024 </span>
           </p>
         </div>
