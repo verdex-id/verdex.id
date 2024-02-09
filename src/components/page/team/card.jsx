@@ -9,7 +9,7 @@ export default function TeamCard({
 }) {
   return (
     <>
-      <div className="h-[664px] w-[400px] rounded-[32px] overflow-hidden mx-auto">
+      <div className="h-[664px] w-[300px] md:w-[400px] rounded-[32px] overflow-hidden mx-auto">
         <div className="bg-gradient-to-b from-blue-300 via blue-300 to-transparent h-auto relative z-0">
           <div>
             <img src={image_url} alt="" className="z-20" />
@@ -28,7 +28,7 @@ export default function TeamCard({
         </div>
         <div className="flex justify-center items-center h-max mt-3 gap-2">
           <div className="rounded-full border-2 border-white border-dotted p-[18px]">
-            <span>{name}</span>
+            <span className="text-sm md:text-base text-nowrap">{name}</span>
           </div>
           <Link
             href={attachment_url}
