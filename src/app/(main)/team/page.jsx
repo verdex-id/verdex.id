@@ -33,9 +33,9 @@ export default function TeamPage() {
       <div className="min-h-dvh p-8 bg-[#000017]">
         <div className="w-full max-w-screen-xl mx-auto">
           <div>
-            <div className="flex items-center gap-8">
-              <h1 className="font-medium text-[64px]">Our Teams</h1>
-              <img src="/icons/group.svg" alt="" />
+            <div className="flex items-center gap-4 md:gap-8">
+              <h1 className="font-medium text-2xl md:text-[64px]">Our Teams</h1>
+              <img src="/icons/group.svg" alt="" className="h-8 md:h-max" />
             </div>
             <p className="text-left">
               Hai Verumians 👋. Kenalin nih anggota tim yang berkontribusi
@@ -46,7 +46,7 @@ export default function TeamPage() {
               ini.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-8 mt-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mt-5">
             {dummyData.map((data, i) => (
               <TeamCard
                 key={i}
