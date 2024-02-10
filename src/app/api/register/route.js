@@ -13,8 +13,8 @@ export async function POST(request) {
 
   const arg = {
     data: {
-      full_name: req.full_name,
-      hashed_password: req.password,
+      fullName: req.full_name,
+      hashedPassword: req.password,
       email: req.email,
     },
   };
@@ -24,9 +24,9 @@ export async function POST(request) {
   console.log(user);
 
   const res = {
-    "full_name" : user.full_name,
-    "email" : user.email
-  }
+    full_name: user.fullName,
+    email: user.email,
+  };
 
   return Response.json({
     status: 200,
