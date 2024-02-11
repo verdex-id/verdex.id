@@ -22,7 +22,7 @@ model User {
 
 model Session {
   id           String   @id @unique @default(uuid())
-  refreshToken String?  @unique
+  refreshToken String?  @default(uuid()) @db.Text
   isBlocked    Boolean  @default(false)
   createdAt    DateTime @default(now())
   expiredAt    DateTime
