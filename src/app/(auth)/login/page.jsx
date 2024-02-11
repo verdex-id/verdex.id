@@ -15,7 +15,7 @@ export default function LoginPage() {
           <div>
             <h1 className="font-medium text-[64px]">Login</h1>
             <h2 className="text-gray-400">
-              Silahkan login untuk melihat course.
+              Silahkan login untuk melihat course.{" "}
             </h2>
           </div>
           <div className="relative group">

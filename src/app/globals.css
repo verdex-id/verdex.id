@@ -13,5 +13,13 @@ input:focus {
 }
 
 .btn {
-  @apply px-12 py-4 border-[3px] border-transparent rounded-[30px] bg-blue-300;
+  @apply inline-block px-5 py-2 lg:px-12 lg:py-3 border-[3px] border-transparent rounded-[30px] bg-blue-300;
+}
+
+.btn-outline {
+  @apply inline-block px-5 py-2 lg:px-12 lg:py-3 border-[3px] border-white/25 rounded-[30px] bg-transparent;
+}
+
+.btn-dotted {
+  @apply inline-block px-5 py-2 lg:px-12 lg:py-3 border-[3px] border-white border-dotted rounded-[30px] bg-transparent;
 }
