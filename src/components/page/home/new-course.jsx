@@ -60,16 +60,18 @@ export default function HomeNewCourse() {
             {dummyData.map((data, i) => (
               <div
                 key={i}
-                className="w-[300px] lg:w-[400px] rounded-[32px] border-2 border-white/25 p-8 space-y-[12px] mx-auto"
+                className="w-[300px] lg:w-[400px] rounded-[32px] border-2 border-white/25 p-8 space-y-[12px] mx-auto flex flex-col justify-between"
               >
-                <Image
-                  src={data.image_url}
-                  width={0}
-                  height={0}
-                  className="w-full"
-                />
-                <h1 className="font-medium text-xl">{data.title}</h1>
-                <p className="text-paragraph text-sm">{data.description}</p>
+                <div className="space-y-[12px]">
+                  <Image
+                    src={data.image_url}
+                    width={0}
+                    height={0}
+                    className="w-full"
+                  />
+                  <h1 className="font-medium text-xl">{data.title}</h1>
+                  <p className="text-paragraph text-sm">{data.description}</p>
+                </div>
                 <div className="flex items-center gap-4 !mt-8">
                   <div className="w-full space-y-[12px]">
                     {showDetail && (

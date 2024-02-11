@@ -1,19 +1,19 @@
 import React from "react";
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="p-5 pb-10 md:pb-52 pt-10 md:pt-52 bg-gradient-to-t from-dark-900 via-blue-900 to-blue-300  mx-auto">
+    <footer className="p-5 pb-10 md:pb-52 pt-10 md:pt-52 bg-gradient-to-t from-dark-900 via-blue-900 to-blue-300  mx-auto00">
       {/* Company Logo Section */}
-      <div className="flex flex-col md:flex-row md:justify-between items-start">
+      <div className="flex flex-col md:flex-row md:justify-between items-start border-t-2 border-t-blue-1">
         <div className="w-full md:w-1/5 mb-8 md:mb-0 md:flex md:flex-col items-center">
           <Image
             src="/logo/verdex.svg"
             alt="Company Logo"
             width={138}
             height={112}
-            className="mb-2 md:mb-0 mt-8 md:mt-16"
+            className="mb-2 md:mb-0 mt-8 md:mt-16 mx-auto"
           />
         </div>
 
@@ -30,9 +30,15 @@ const Footer = () => {
             />
           </h3>
           <ul className="list-none text-gray-300 py-2 md:py-4 gap-4 text-left">
-            <li><Link href="/resource-1">Resource 1</Link></li>
-            <li><Link href="/resource-2">Resource 2</Link></li>
-            <li><Link href="/resource-3">Resource 3</Link></li>
+            <li>
+              <Link href="/resource-1">Resource 1</Link>
+            </li>
+            <li>
+              <Link href="/resource-2">Resource 2</Link>
+            </li>
+            <li>
+              <Link href="/resource-3">Resource 3</Link>
+            </li>
           </ul>
         </div>
         {/* Resources Section End*/}
@@ -50,10 +56,18 @@ const Footer = () => {
             />
           </h3>
           <ul className="list-none text-gray-300 text-left gap-4 mt-3">
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/course">Course</Link></li>
-            <li><Link href="/team">Our Team</Link></li>
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
+              <Link href="/about">About Us</Link>
+            </li>
+            <li>
+              <Link href="/course">Course</Link>
+            </li>
+            <li>
+              <Link href="/team">Our Team</Link>
+            </li>
           </ul>
         </div>
         {/* Navigation Section End*/}
@@ -71,9 +85,15 @@ const Footer = () => {
             />
           </h3>
           <ul className="list-none text-gray-300 gap-4 mt-3 text-left">
-            <li><Link href="/linkedin">Linkedin</Link></li>
-            <li><Link href="/github">Github</Link></li>
-            <li><Link href="/discord">Discord</Link></li>
+            <li>
+              <Link href="/linkedin">Linkedin</Link>
+            </li>
+            <li>
+              <Link href="/github">Github</Link>
+            </li>
+            <li>
+              <Link href="/discord">Discord</Link>
+            </li>
           </ul>
         </div>
       </div>
