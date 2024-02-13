@@ -1,56 +1,76 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 import { headers } from "next/headers";
+import { failResponse } from "./utils/response";
+import { verifyToken } from "./lib/jwt";
 
-// This function can be marked `async` if using `await` inside
-export function middleware(request) {
-  let authorization = headers().get("authorization");
+export const authPayloadUserId = "authorization_payload_user_id";
 
-
-  if (authorization === null) {
-    return Response.json({
-      status: 401,
-      message: "Authorization header is not provided.",
-    });
+export async function middleware(request) {
+  try {
+    await request.json();
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      return NextResponse.json(
+        ...failResponse(
+          "You better watch your request/JSON or I ki** you",
+          400,
+          {
+            name: e.name,
+            message: e.message,
+          },
+        ),
+      );
+    }
   }
 
-  authorization = authorization.split(" ");
+  const authRoutes = ["/api/testing"];
 
-  
-  if (authorization.length === 0) {
-    return Response.json({
-      status: 401,
-      message: "Authorization header is not provided.",
+  if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
+    let authorization = headers().get("authorization");
+    if (authorization === null) {
+      return Response.json(
+        ...failResponse("Authorization header is not provided.", 401),
+      );
+    }
+
+    authorization = authorization.split(" ");
+
+    if (authorization.length === 0) {
+      return Response.json(
+        ...failResponse("Authorization header is not provided.", 401),
+      );
+    }
+
+    if (authorization.length < 2) {
+      return Response.json(
+        ...failResponse("Authorization header is not valid.", 401),
+      );
+    }
+
+    if (authorization[0].toLowerCase() !== "bearer") {
+      return Response.json(
+        ...failResponse("Unsupported authentication type.", 401),
+      );
+    }
+
+    const [isValid, payload] = await verifyToken(authorization[1]);
+    if (!isValid) {
+      return Response.json(
+        ...failResponse("token has expired or is invalid.", 401),
+      );
+    }
+
+    const requestHeaders = new Headers(request.header);
+    requestHeaders.set(authPayloadUserId, payload.userId);
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
     });
   }
-
-  console.log(authorization);
-  console.log(`asli : ${authorization} `);
-
-  console.log(authorization.length);
-
-  console.log(`tipe : ${authorization[0]}`);
-  console.log(`token : ${authorization[1]}`);
-
-
-  if (authorization.length < 2) {
-    return Response.json({
-      status: 401,
-      message: "Invalid authentication credentials.",
-    });
-  }
-
-  if (authorization[0].toLowerCase() !== "bearer") {
-    return Response.json({
-      status: 401,
-      message: "Unsupported authentication type.",
-    });
-  }
-
-  return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-  matcher: "/needauth",
+  matcher: ["/api/:path*"],
 };
