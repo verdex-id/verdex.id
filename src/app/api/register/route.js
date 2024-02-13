@@ -1,5 +1,5 @@
-import { prismaErrorCode } from "@/lib/prisma";
-import { failResponse, successResponse } from "@/lib/response";
+import { prismaErrorCode } from "@/utils/prisma";
+import { failResponse, successResponse } from "@/utils/response";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import Joi from "joi";
