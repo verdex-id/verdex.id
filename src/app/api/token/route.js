@@ -18,7 +18,7 @@ export async function POST(request) {
 
   if (invalidReq.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 400, invalidReq.error.details),
     );
   }
 
@@ -42,7 +42,7 @@ export async function POST(request) {
     session = await prisma.session.findUnique(arg);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      return NextResponse.json(...failResponse(prismaErrorCode[e.code], 403));
+      return NextResponse.json(...failResponse(prismaErrorCode[e.code], 400));
     }
 
     return NextResponse.json(...errorResponse());
