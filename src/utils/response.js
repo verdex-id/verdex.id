@@ -1,11 +1,15 @@
-
-import { NextResponse } from "next/server";
-
 /**
- * Generates a JSON response indicating failure with the specified message and status code.
- * @param {string} message - The message describing the reason for failure.
- * @param {number} status - The HTTP status code to be included in the response.
- * @returns {NextResponse} A NextResponse object containing the JSON response.
+ * Generate a fail response object with the provided message, status, and optional detail.
+ * @param {string} message - The error message.
+ * @param {number} status - The HTTP status code.
+ * @param {string} [detail="No detail provided"] - The optional detail message.
+ * @returns {Array<Object>} An array containing:
+ * - A fail response object with status, message, and detail properties.
+ * - An object with the status property.
+ * @example
+ * // Usage example:
+ * const response = failResponse("Session not found", 404);
+ * console.log(response);
  */
 export function failResponse(message, status, detail = "No detail provided") {
   return [
@@ -19,12 +23,18 @@ export function failResponse(message, status, detail = "No detail provided") {
 }
 
 /**
- * Generates an error response object with the specified message and status code.
- * @param {string} message - The error message.
- * @param {number} status - The HTTP status code.
- * @returns {Array} An array containing the error response object and the status object.
+ * Generate an error response object with the provided message and status.
+ * @param {string} [message="We're sorry, but something unexpected happened. Please try again later."] - The error message.
+ * @param {number} [status=500] - The HTTP status code.
+ * @returns {Array<Object>} An array containing:
+ * - An error response object with status and message properties.
+ * - An object with the status property.
+ * @example
+ * // Usage example:
+ * const response = errorResponse("Internal Server Error", 500);
+ * console.log(response);
  */
-export function errorResponse(message, status) {
+export function errorResponse(message = "We're sorry, but something unexpected happened. Please try again later." , status = 500) {
   return [
     {
       status: "error",
@@ -35,9 +45,15 @@ export function errorResponse(message, status) {
 }
 
 /**
- * Generates a success response object with the specified data.
+ * Generate a success response object with the provided data.
  * @param {any} data - The data to be included in the success response.
- * @returns {Array} An array containing the success response object and the status object.
+ * @returns {Array<Object>} An array containing:
+ * - A success response object with status and data properties.
+ * - An object with the status property.
+ * @example
+ * // Usage example:
+ * const response = successResponse({ message: "Data successfully retrieved" });
+ * console.log(response);
  */
 export function successResponse(data) {
   return [
