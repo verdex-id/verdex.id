@@ -1,19 +1,24 @@
 import { createToken } from "@/lib/jwt";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { errorResponse, failResponse, successResponse } from "@/utils/response";
+import Joi from "joi";
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
+  const schema = Joi.object({
+    password: Joi.string().required(),
+    email: Joi.string().email().required(),
+  });
+
   const req = await request.json();
 
-  if (!req.email || !req.password) {
+  const invalidReq = schema.validate(req);
+
+  if (invalidReq.error) {
     return NextResponse.json(
-      {
-        status: "fail",
-        data: { message: "Invalid request format." },
-      },
-      { status: 403 },
+      ...failResponse("Invalid request format.", 400, invalidReq.error.details),
     );
   }
 
@@ -27,21 +32,13 @@ export async function POST(request) {
 
   if (!user) {
     return NextResponse.json(
-      {
-        status: "fail",
-        data: { message: "User not found." },
-      },
-      { status: 404 },
+      ...failResponse("Username and/or password are incorrect.", 404),
     );
   }
 
   if (req.password !== user.hashedPassword) {
     return NextResponse.json(
-      {
-        status: "fail",
-        data: { message: "Invalid login, please try again." },
-      },
-      { status: 403 },
+      ...failResponse("Username and/or password are incorrect.", 403),
     );
   }
 
@@ -51,17 +48,7 @@ export async function POST(request) {
   );
 
   if (ATErr) {
-    console.log(ATErr);
-    return NextResponse.json(
-      {
-        status: "fail",
-        data: {
-          message:
-            "We're sorry, but something unexpected happened. Please try again later.",
-        },
-      },
-      { status: 500 },
-    );
+    return NextResponse.json(...errorResponse());
   }
 
   const [refreshToken, RTPayload, RTErr] = await createToken(
@@ -70,17 +57,7 @@ export async function POST(request) {
   );
 
   if (RTErr) {
-    console.log(RTErr);
-    return NextResponse.json(
-      {
-        status: "fail",
-        data: {
-          message:
-            "We're sorry, but something unexpected happened. Please try again later.",
-        },
-      },
-      { status: 500 },
-    );
+    return NextResponse.json(...errorResponse());
   }
 
   arg = {
@@ -95,34 +72,20 @@ export async function POST(request) {
   const session = await prisma.session.create(arg);
 
   if (!session) {
-    console.log("Failed to create session in the database.");
-    return NextResponse.json(
-      {
-        status: "fail",
-        data: {
-          message:
-            "We're sorry, but something unexpected happened. Please try again later.",
-        },
-      },
-      { status: 500 },
-    );
+    return NextResponse.json(...errorResponse());
   }
 
   const res = {
-    status: "success.",
-    data: {
-      session_id: session.id,
-      access_token: accessToken,
-      access_token_expire_at: ATPayload.expiredAt,
-      refresh_token: refreshToken,
-      refresh_token_expire_at: RTPayload.expiredAt,
-      user: {
-        full_name: user.fullName,
-        email: user.email,
-        created_at: user.createdAt,
-      },
+    session_id: session.id,
+    access_token: accessToken,
+    access_token_expire_at: ATPayload.expiredAt,
+    refresh_token: refreshToken,
+    refresh_token_expire_at: RTPayload.expiredAt,
+    user: {
+      full_name: user.fullName,
+      email: user.email,
+      created_at: user.createdAt,
     },
   };
-
-  return NextResponse.json(res);
+  return NextResponse.json(...successResponse(res));
 }
