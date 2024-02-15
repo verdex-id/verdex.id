@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendEmailVerification(to, link) {
-  const info = await transporter.sendMail({
+  return await transporter.sendMail({
     from: process.env.EMAIL_SENDER,
     to: to,
     subject: "Verdex Email Verification",
