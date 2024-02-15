@@ -3,6 +3,7 @@ import { failResponse, successResponse } from "@/utils/response";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import Joi from "joi";
+import { sendEmailVerification } from "@/services/email";
 
 const prisma = new PrismaClient();
 
@@ -42,6 +43,7 @@ export async function POST(request) {
   let user;
 
   try {
+    await sendEmailVerification(req.email, "https://github.com/verdex-id/verdex.id")
     user = await prisma.user.create(arg);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
