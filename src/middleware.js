@@ -6,25 +6,28 @@ import { verifyToken } from "./lib/jwt";
 export const authPayloadUserId = "authorization_payload_user_id";
 
 export async function middleware(request) {
-  try {
-    await request.json();
-  } catch (e) {
-    if (e instanceof SyntaxError) {
-      return NextResponse.json(
-        ...failResponse(
-          "You better watch your request/JSON or I ki** you",
-          400,
-          {
-            name: e.name,
-            message: e.message,
-          },
-        ),
-      );
+  const currentPath = request.nextUrl.pathname;
+
+  if (!isIncludedPath(["api/verify-email"], currentPath)) {
+    try {
+      await request.json();
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        return NextResponse.json(
+          ...failResponse(
+            "You better watch your request/JSON or I ki** you",
+            400,
+            {
+              name: e.name,
+              message: e.message,
+            },
+          ),
+        );
+      }
     }
   }
 
   const authRoutes = ["/api/testing"];
-
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -74,3 +77,9 @@ export async function middleware(request) {
 export const config = {
   matcher: ["/api/:path*"],
 };
+
+function isIncludedPath(paths, path) {
+  const regex = new RegExp(paths.map((item) => `(${item})`).join("|"));
+
+  return regex.test(path);
+}
