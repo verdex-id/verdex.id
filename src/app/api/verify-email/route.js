@@ -52,7 +52,8 @@ export async function GET(request) {
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
+      // return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
+      return NextResponse.json(...failResponse("Invalid request", 409));
     }
 
     return NextResponse.json(...errorResponse());
