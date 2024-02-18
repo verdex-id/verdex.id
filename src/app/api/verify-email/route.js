@@ -35,6 +35,7 @@ export async function GET(request) {
         where: {
           id: verifyEmailId,
           secretCode: secretCode,
+          isUsed: false
         },
         data: {
           isUsed: true,
