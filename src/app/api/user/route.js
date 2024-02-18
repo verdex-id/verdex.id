@@ -1,52 +1,30 @@
+import { failResponse } from "@/utils/response";
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
+import { updatePassword } from "./update-password";
+import { updateFullName } from "./update-fullname";
+import { updateEmail } from "./update-email";
 
 const prisma = new PrismaClient();
 
-/**
- * Endpoint POST /api/user
- * create an user
- */
-export async function POST(request) {
+export async function PUT(request) {
   const req = await request.json();
+  let successResult;
+  let unSuccessResult;
 
-  // TODO : create hashing password function
+  if (req.full_name && !req.new_password && !req.new_email) {
+    [successResult, unSuccessResult] = await updateFullName(req, prisma);
+  } else if (!req.full_name && req.new_password && !req.new_email) {
+    [successResult, unSuccessResult] = await updatePassword(req, prisma);
+  } else if (!req.full_name && !req.new_password && req.new_email) {
+    [successResult, unSuccessResult] = await updateEmail(req, prisma);
+  } else {
+    return NextResponse.json(...failResponse("Invalid request format.", 403));
+  }
 
-  const arg = {
-    data: {
-      full_name: req.full_name,
-      hashed_password: req.password,
-      email: req.email,
-    },
-  };
+  if (unSuccessResult) {
+    return NextResponse.json(...unSuccessResult);
+  }
 
-  const user = await prisma.user.create(arg);
-
-  return Response.json({
-    status: 200,
-    data: user,
-    error: null,
-  });
-}
-
-/**
- * Endpoint GET /api/user?_id=<user_id>
- * get an user
- */
-export async function GET(request) {
-  const url = new URL(request.url);
-  const _id = url.searchParams.get("_id");
-
-  const arg = {
-    where: {
-      id: _id,
-    },
-  };
-
-  const user = await prisma.user.findUnique(arg);
-
-  return Response.json({
-    status: 200,
-    data: user,
-    error: null,
-  });
+  return NextResponse.json(...successResult);
 }
