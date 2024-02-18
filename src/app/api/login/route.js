@@ -32,13 +32,13 @@ export async function POST(request) {
 
   if (!user) {
     return NextResponse.json(
-      ...failResponse("Username and/or password are incorrect.", 404),
+      ...failResponse("Username and/or password are incorrect.", 401),
     );
   }
 
   if (req.password !== user.hashedPassword) {
     return NextResponse.json(
-      ...failResponse("Username and/or password are incorrect.", 403),
+      ...failResponse("Username and/or password are incorrect.", 401),
     );
   }
 
