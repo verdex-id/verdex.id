@@ -27,7 +27,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/testing"];
+  const authRoutes = ["/api/testing", "/api/user"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -61,6 +61,10 @@ export async function middleware(request) {
       return Response.json(
         ...failResponse("token has expired or is invalid.", 401),
       );
+    }
+
+    if (!payload.userId) {
+      return NextResponse.json(...errorResponse());
     }
 
     const requestHeaders = new Headers(request.header);
