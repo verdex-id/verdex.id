@@ -1,18 +1,21 @@
 import { headers } from "next/headers";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
 import { authPayloadUserId } from "@/middleware";
 import { prismaErrorCode } from "@/utils/prisma";
+import { NextResponse } from "next/server";
 
-export async function updateFullName(req, prisma) {
-  let schema;
-  let arg;
+const prisma = new PrismaClient();
+
+export async function PUT(request) {
   let user;
   const payloadUserId = headers().get(authPayloadUserId);
 
-  schema = Joi.object({
-    full_name: Joi.string()
+  const req = await request.json();
+
+  const schema = Joi.object({
+    new_name: Joi.string()
       .pattern(/^[A-Za-z\s']+$/)
       .min(3)
       .required(),
@@ -20,21 +23,20 @@ export async function updateFullName(req, prisma) {
 
   const invalidReq = schema.validate(req);
   if (invalidReq.error) {
-    return [
-      null,
-      failResponse("Invalid request format.", 403, invalidReq.error.details),
-    ];
+    return NextResponse.json(
+      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+    );
   }
 
-  arg = {
+  const arg = {
     where: {
       id: payloadUserId,
       NOT: {
-        fullName: req.full_name
-      }
+        fullName: req.new_name,
+      },
     },
     data: {
-      fullName: req.full_name,
+      fullName: req.new_name,
     },
   };
 
@@ -42,10 +44,10 @@ export async function updateFullName(req, prisma) {
     user = await prisma.user.update(arg);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      return [null, failResponse(prismaErrorCode[e.code], 409)];
+      return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
     }
-    return [null, errorResponse()];
+    return NextResponse.json(...errorResponse());
   }
 
-  return [successResponse({ full_name: user.fullName }), null];
+  return NextResponse.json(...successResponse({ full_name: user.fullName }));
 }

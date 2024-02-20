@@ -1,17 +1,22 @@
 import { headers } from "next/headers";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { generateRandomString } from "@/utils/random";
 import { sendEmailVerification } from "@/services/email";
 import { prismaErrorCode } from "@/utils/prisma";
-import Joi from "joi";
+import Joi, { when } from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
 import { authPayloadUserId } from "@/middleware";
 import { comparePassword } from "@/lib/password";
+import { NextResponse } from "next/server";
 
-export async function updateEmail(req, prisma) {
+const prisma = new PrismaClient();
+
+export async function PUT(request) {
   let schema;
   let user;
   const payloadUserId = headers().get(authPayloadUserId);
+
+  const req = await request.json();
 
   schema = Joi.object({
     password: Joi.string().required(),
@@ -20,10 +25,9 @@ export async function updateEmail(req, prisma) {
 
   const invalidReq = schema.validate(req);
   if (invalidReq.error) {
-    return [
-      null,
-      failResponse("Invalid request format.", 403, invalidReq.error.details),
-    ];
+    return NextResponse.json(
+      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+    );
   }
 
   user = await prisma.user.findUnique({
@@ -32,7 +36,7 @@ export async function updateEmail(req, prisma) {
     },
   });
   if (!user) {
-    return [null, errorResponse()];
+    return NextResponse.json(...errorResponse())
   }
 
   const isCorrectPassword = await comparePassword(
@@ -41,14 +45,14 @@ export async function updateEmail(req, prisma) {
   );
 
   if (!isCorrectPassword) {
-    return [null, failResponse("Password incorrect.", 401)];
+    return NextResponse.json(...failResponse("Password incorrect.", 401));
   }
 
   try {
     await prisma.$transaction(async (tx) => {
       const expirationTime = new Date(
         new Date().getTime() +
-        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+          process.env.EMAIL_VERIFICATION_DURATION * 3600000,
       );
       const secretCode = generateRandomString(32);
 
@@ -89,16 +93,15 @@ export async function updateEmail(req, prisma) {
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      return [null, failResponse(prismaErrorCode[e.code], 409)];
+      return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
     }
 
-    return [
-      null,
-      errorResponse(
+    return NextResponse.json(
+      ...errorResponse(
         "Unable to perform action at this time. Please try again later.",
       ),
-    ];
+    );
   }
 
-  return [successResponse({ email: user.email }), null];
+  return NextResponse.json(...successResponse({ email: user.email }));
 }
