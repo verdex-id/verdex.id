@@ -37,8 +37,6 @@ export async function POST(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  console.log(hashedPassword);
-
   let user;
 
   try {
