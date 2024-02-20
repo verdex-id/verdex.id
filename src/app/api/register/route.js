@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import Joi from "joi";
 import { sendEmailVerification } from "@/services/email";
 import { generateRandomString } from "@/utils/random";
+import { hashPassword } from "@/lib/password";
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,12 @@ export async function POST(request) {
     );
   }
 
-  // TODO : create hashing password function
+  const hashedPassword = await hashPassword(req.password);
+  if (!hashedPassword) {
+    return NextResponse.json(...errorResponse());
+  }
+
+  console.log(hashedPassword);
 
   let user;
 
@@ -39,7 +45,7 @@ export async function POST(request) {
     await prisma.$transaction(async (tx) => {
       const expirationTime = new Date(
         new Date().getTime() +
-          process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
       );
       const secretCode = generateRandomString(32);
 

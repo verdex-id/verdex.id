@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
+import { comparePassword } from "@/lib/password";
 
 const prisma = new PrismaClient();
 
@@ -36,7 +37,13 @@ export async function POST(request) {
     );
   }
 
-  if (req.password !== user.hashedPassword) {
+
+  const isCorrectPassword = await comparePassword(
+    req.password,
+    user.hashedPassword,
+  );
+
+  if (!isCorrectPassword) {
     return NextResponse.json(
       ...failResponse("Username and/or password are incorrect.", 401),
     );
