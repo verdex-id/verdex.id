@@ -1,17 +1,17 @@
 import { headers } from "next/headers";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
 import { authPayloadUserId } from "@/middleware";
 import { comparePassword, hashPassword } from "@/lib/password";
+import { NextResponse } from "next/server";
 
-export async function updatePassword(req, prisma) {
-  let schema;
-  let arg;
-  let user;
+const prisma = new PrismaClient();
+
+export async function PUT(request) {
   const payloadUserId = headers().get(authPayloadUserId);
 
-  schema = Joi.object({
+  const schema = Joi.object({
     password: Joi.string().required(),
     new_password: Joi.string()
       .pattern(new RegExp("^[a-zA-Z0-9 ]{3,30}$"))
@@ -19,21 +19,22 @@ export async function updatePassword(req, prisma) {
       .required(),
   });
 
+  const req = await request.json();
+
   const invalidReq = schema.validate(req);
   if (invalidReq.error) {
-    return [
-      null,
-      failResponse("Invalid request format.", 403, invalidReq.error.details),
-    ];
+    return NextResponse.json(
+      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+    );
   }
 
-  user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: {
       id: payloadUserId,
     },
   });
   if (!user) {
-    return [null, errorResponse()];
+    return NextResponse.json(...errorResponse());
   }
 
   const isCorrectPassword = await comparePassword(
@@ -42,15 +43,15 @@ export async function updatePassword(req, prisma) {
   );
 
   if (!isCorrectPassword) {
-    return [null, failResponse("Password incorrect.", 401)];
+    return NextResponse.json(...failResponse("Password incorrect.", 401));
   }
 
   const newHashedPassword = await hashPassword(req.new_password);
   if (!newHashedPassword) {
-    return [null, errorResponse()];
+    return NextResponse.json(...errorResponse());
   }
 
-  arg = {
+  const arg = {
     where: {
       id: user.id,
       hashedPassword: user.hashedPassword,
@@ -64,9 +65,11 @@ export async function updatePassword(req, prisma) {
     user = await prisma.user.update(arg);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      return [null, failResponse("Invalid request", 409)];
+      return NextResponse.json(...failResponse("Invalid request", 409));
     }
-    return [null, errorResponse()];
+    return NextResponse.json(...errorResponse());
   }
-  return [successResponse({ message: "Password successfully updated" }), null];
+  return NextResponse.json(
+    ...successResponse({ message: "Password successfully updated" }),
+  );
 }
