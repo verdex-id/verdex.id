@@ -52,7 +52,7 @@ export async function POST(request) {
       let arg = {
         data: {
           fullName: req.full_name,
-          hashedPassword: req.password,
+          hashedPassword: hashedPassword,
           email: req.email,
         },
       };
