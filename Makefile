@@ -6,20 +6,29 @@ actoken := "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..KErrnD_-LwySXZuKWQ6
 
 
 
-tes_api_register:
-	echo -n '{"password":$(userpass), "email" :"$(useremail)", "full_name" : "$(userfullname)"}' | http -f POST $(apiurl)/register
+user_register:
+	echo -n '{"password":$(userpass), "email" :$(useremail), "full_name" : $(userfullname)}' | http -f POST $(apiurl)/register
 
-tes_api_login:
-	echo -n '{"password":$(userpass) , "email" :"rizkia.as.actmp@gmail.com"}' | http -f POST $(apiurl)/login 
+user_login:
+	echo -n '{"password":$(userpass) , "email" : $(useremail)}' | http -f POST $(apiurl)/login 
 
-tes_api_update_password:
+user_update_password:
 	echo -n '{"password":$(userpass), "new_password" :"rizkia"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/user/password
 
-tes_api_update_email:
+user_update_email:
 	echo -n '{"password":$(userpass), "new_email" :$(useremail)}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/user/email
 
-tes_api_update_fname:
+user_update_fname:
 	echo -n '{ "new_name" : "rizkia"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/user/name
+
+admin_register:
+	echo -n '{"password":$(userpass), "email" :$(useremail), "full_name" : $(userfullname)}' | http -f POST $(apiurl)/admin/register
+
+admin_toggle_access:
+	echo -n '{ "admin_id" : "949ec435-280f-4b43-9d79-eab736b9d1c9"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/admin/access
+
+admin_login:
+	echo -n '{"password":$(userpass) , "email" : $(useremail)}' | http -f POST $(apiurl)/admin/login
 
 mkff:
 	alias mkff="make \$( grep -oP '\.PHONY:\s+(.*)' Makefile | tr ' ' '\n' | fzf)"
