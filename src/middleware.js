@@ -8,7 +8,7 @@ export const authPayloadUserId = "authorization_payload_user_id";
 export async function middleware(request) {
   const currentPath = request.nextUrl.pathname;
 
-  if (!isIncludedPath(["api/verify-email"], currentPath)) {
+  if (!isIncludedPath(["/verify-email"], currentPath)) {
     try {
       await request.json();
     } catch (e) {
