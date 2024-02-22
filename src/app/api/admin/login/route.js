@@ -30,18 +30,18 @@ export async function POST(request) {
 
   const admin = await prisma.admin.findUnique(arg);
 
+  if (!admin) {
+    return NextResponse.json(
+      ...failResponse("Username and/or password are incorrect.", 401),
+    );
+  }
+
   const isCorrectPassword = await comparePassword(
     req.password,
     admin.hashedPassword,
   );
 
   if (!isCorrectPassword) {
-    return NextResponse.json(
-      ...failResponse("Username and/or password are incorrect.", 401),
-    );
-  }
-
-  if (!admin) {
     return NextResponse.json(
       ...failResponse("Username and/or password are incorrect.", 401),
     );
