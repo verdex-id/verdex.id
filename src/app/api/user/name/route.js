@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { Prisma, PrismaClient } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
-import { authPayloadUserId } from "@/middleware";
+import { authPayloadAccountId } from "@/middleware";
 import { prismaErrorCode } from "@/utils/prisma";
 import { NextResponse } from "next/server";
 
@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 export async function PUT(request) {
   let user;
-  const payloadUserId = headers().get(authPayloadUserId);
+  const payloadUserId = headers().get(authPayloadAccountId);
 
   const req = await request.json();
 

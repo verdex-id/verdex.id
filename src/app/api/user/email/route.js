@@ -5,7 +5,7 @@ import { sendEmailVerification } from "@/services/email";
 import { prismaErrorCode } from "@/utils/prisma";
 import Joi, { when } from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
-import { authPayloadUserId } from "@/middleware";
+import { authPayloadAccountId } from "@/middleware";
 import { comparePassword } from "@/lib/password";
 import { NextResponse } from "next/server";
 
@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 export async function PUT(request) {
   let schema;
   let user;
-  const payloadUserId = headers().get(authPayloadUserId);
+  const payloadUserId = headers().get(authPayloadAccountId);
 
   const req = await request.json();
 
@@ -36,7 +36,7 @@ export async function PUT(request) {
     },
   });
   if (!user) {
-    return NextResponse.json(...errorResponse())
+    return NextResponse.json(...errorResponse());
   }
 
   const isCorrectPassword = await comparePassword(

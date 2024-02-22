@@ -4,8 +4,8 @@ import * as jose from "jose";
 const key = jose.base64url.decode(process.env.TOKEN_SYMMETRIC_KEY);
 
 /**
- * Create a JWT token for the given user ID with specified duration.
- * @param {string} userId - The user ID for whom the token is created.
+ * Create a JWT token for the given account ID with specified duration.
+ * @param {string} accountId - The account ID for whom the token is created.
  * @param {number} duration - The duration of the token validity in hours.
  * @returns {Promise<[string|null, Object|null, string|null]>} A Promise that resolves with an array containing:
  * - The encrypted token string.
@@ -21,7 +21,7 @@ const key = jose.base64url.decode(process.env.TOKEN_SYMMETRIC_KEY);
  *   console.log("Payload:", payload);
  * }
  */
-export async function createToken(userId, duration) {
+export async function createToken(accountId, duration) {
   let currentDate = new Date();
 
   const expirationTime = new Date(currentDate.getTime() + duration * 3600000);
@@ -37,7 +37,7 @@ export async function createToken(userId, duration) {
 
   const payload = {
     id: id,
-    userId: userId,
+    accountId: accountId,
     createdAt: currentDate,
     expiredAt: expirationTime,
   };

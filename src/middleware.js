@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { failResponse } from "./utils/response";
 import { verifyToken } from "./lib/jwt";
 
-export const authPayloadUserId = "authorization_payload_user_id";
+export const authPayloadAccountId = "authorization_payload_account_id";
 
 export async function middleware(request) {
   const currentPath = request.nextUrl.pathname;
@@ -27,7 +27,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/testing", "/api/user"];
+  const authRoutes = ["/api/testing", "/api/user", "/api/admin/settings"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -63,12 +63,14 @@ export async function middleware(request) {
       );
     }
 
-    if (!payload.userId) {
+    console.log(payload)
+
+    if (!payload.accountId) {
       return NextResponse.json(...errorResponse());
     }
 
     const requestHeaders = new Headers(request.header);
-    requestHeaders.set(authPayloadUserId, payload.userId);
+    requestHeaders.set(authPayloadAccountId, payload.accountId);
 
     return NextResponse.next({
       request: {
