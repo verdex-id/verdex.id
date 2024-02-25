@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
 import { PrismaClient, Prisma } from "@prisma/client";
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} from "@prisma/client/runtime/library";
+import { headers } from "next/headers";
+import { authPayloadAccountId } from "@/middleware";
 
 const prisma = new PrismaClient();
 
@@ -23,6 +21,21 @@ export async function PUT(request) {
     );
   }
 
+  const payloadAdminId = headers().get(authPayloadAccountId);
+
+  const author = await prisma.admin.findUnique({
+    where: { id: payloadAdminId, isBlocked: false },
+  });
+
+  if (!author) {
+    return NextResponse.json(
+      ...failResponse(
+        "Unauthorized account: You do not have permission to perform this action.",
+        401,
+      ),
+    );
+  }
+
   let admin;
 
   try {
@@ -30,10 +43,6 @@ export async function PUT(request) {
       admin = await tx.admin.findUnique({
         where: { id: req.admin_id, isEmailVerified: true },
       });
-
-
-
-      console.log(admin);
 
       admin = await tx.admin.update({
         where: { id: req.admin_id, isEmailVerified: true },
@@ -49,7 +58,7 @@ export async function PUT(request) {
     }
 
     if (!admin) {
-      return NextResponse.json(...failResponse("Account not found.",404))
+      return NextResponse.json(...failResponse("Account not found.", 404));
     }
     console.log(e);
 

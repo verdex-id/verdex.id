@@ -8,7 +8,7 @@ export const authPayloadAccountId = "authorization_payload_account_id";
 export async function middleware(request) {
   const currentPath = request.nextUrl.pathname;
 
-  if (!isIncludedPath(["/verify-email"], currentPath)) {
+  if (!isIncludedPath(["/verify-email", "/team"], currentPath)) {
     try {
       await request.json();
     } catch (e) {
@@ -27,7 +27,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/testing", "/api/user", "/api/admin/settings"];
+  const authRoutes = ["/api/testing", "/api/user", "/api/admin/settings", "/api/admin/access"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -62,8 +62,6 @@ export async function middleware(request) {
         ...failResponse("token has expired or is invalid.", 401),
       );
     }
-
-    console.log(payload)
 
     if (!payload.accountId) {
       return NextResponse.json(...errorResponse());
