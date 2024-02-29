@@ -49,7 +49,7 @@ model VerifyEmail {
 model Admin {
   id              String        @id @unique @default(uuid())
   fullName        String
-  imagePath       String?       @unique
+  image           String?       @unique
   hashedPassword  String
   email           String        @unique
   isEmailVerified Boolean       @default(false)
