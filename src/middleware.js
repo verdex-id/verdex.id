@@ -8,7 +8,12 @@ export const authPayloadAccountId = "authorization_payload_account_id";
 export async function middleware(request) {
   const currentPath = request.nextUrl.pathname;
 
-  if (!isIncludedPath(["/verify-email", "/team"], currentPath)) {
+  if (
+    !isIncludedPath(
+      ["/verify-email", "/team", "/admin/settings/image"],
+      currentPath,
+    )
+  ) {
     try {
       await request.json();
     } catch (e) {
@@ -27,7 +32,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/testing", "/api/user", "/api/admin/settings", "/api/admin/access"];
+  const authRoutes = ["/api/user", "/api/admin/access", "/api/admin/settings"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -67,7 +72,7 @@ export async function middleware(request) {
       return NextResponse.json(...errorResponse());
     }
 
-    const requestHeaders = new Headers(request.header);
+    const requestHeaders = new Headers(request.headers);
     requestHeaders.set(authPayloadAccountId, payload.accountId);
 
     return NextResponse.next({
