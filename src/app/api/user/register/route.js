@@ -1,13 +1,12 @@
 import { prismaErrorCode } from "@/utils/prisma";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import Joi from "joi";
 import { sendEmailVerification } from "@/services/email";
 import { generateRandomString } from "@/utils/random";
 import { hashPassword } from "@/lib/password";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   const schema = Joi.object({
@@ -37,8 +36,6 @@ export async function POST(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  console.log(hashedPassword);
-
   let user;
 
   try {
@@ -52,7 +49,7 @@ export async function POST(request) {
       let arg = {
         data: {
           fullName: req.full_name,
-          hashedPassword: req.password,
+          hashedPassword: hashedPassword,
           email: req.email,
         },
       };
@@ -70,7 +67,7 @@ export async function POST(request) {
 
       const info = await sendEmailVerification(
         user.email,
-        `${process.env.BASE_URL}/api/verify-email?verify_email_id=${verifyEmail.id}&secret_code=${verifyEmail.secretCode}`,
+        `${process.env.BASE_URL}/api/user/verify-email?verify_email_id=${verifyEmail.id}&secret_code=${verifyEmail.secretCode}`,
       );
 
       if (info.rejected.length > 0) {

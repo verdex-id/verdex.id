@@ -1,11 +1,10 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { createToken, verifyToken } from "@/lib/jwt";
 import Joi from "joi";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import { prismaErrorCode } from "@/utils/prisma";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   const schema = Joi.object({
@@ -15,13 +14,11 @@ export async function POST(request) {
   const req = await request.json();
 
   const invalidReq = schema.validate(req);
-
   if (invalidReq.error) {
     return NextResponse.json(
       ...failResponse("Invalid request format.", 400, invalidReq.error.details),
     );
   }
-
   const [isValid, RTPayload] = await verifyToken(req.refresh_token);
 
   if (!isValid) {
@@ -56,8 +53,8 @@ export async function POST(request) {
     return NextResponse.json(...failResponse("blocked session", 401));
   }
 
-  if (session.userId !== RTPayload.userId) {
-    return NextResponse.json(...failResponse("incorrect session user", 401));
+  if (session.userId !== RTPayload.accountId) {
+    return NextResponse.json(...failResponse("incorrect session account", 401));
   }
 
   if (session.refreshToken !== req.refresh_token) {
@@ -71,7 +68,7 @@ export async function POST(request) {
   }
 
   const [newAccessToken, NATPayload, NATErr] = await createToken(
-    RTPayload.userId,
+    RTPayload.accountId,
     process.env.ACCESS_TOKEN_DURATION,
   );
 

@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
-import { PrismaClient, Prisma } from "@prisma/client";
-import { prismaErrorCode } from "@/utils/prisma";
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export async function GET(request) {
   const schema = Joi.object({
@@ -35,7 +33,7 @@ export async function GET(request) {
         where: {
           id: verifyEmailId,
           secretCode: secretCode,
-          isUsed: false
+          isUsed: false,
         },
         data: {
           isUsed: true,

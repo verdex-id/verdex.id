@@ -1,16 +1,14 @@
 import { headers } from "next/headers";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
-import { authPayloadUserId } from "@/middleware";
+import { authPayloadAccountId } from "@/middleware";
 import { prismaErrorCode } from "@/utils/prisma";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function PUT(request) {
-  let user;
-  const payloadUserId = headers().get(authPayloadUserId);
+  const payloadAccountId = headers().get(authPayloadAccountId);
 
   const req = await request.json();
 
@@ -30,7 +28,7 @@ export async function PUT(request) {
 
   const arg = {
     where: {
-      id: payloadUserId,
+      id: payloadAccountId,
       NOT: {
         fullName: req.new_name,
       },
@@ -40,8 +38,10 @@ export async function PUT(request) {
     },
   };
 
+  let admin;
+
   try {
-    user = await prisma.user.update(arg);
+    admin = await prisma.admin.update(arg);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
@@ -49,5 +49,5 @@ export async function PUT(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  return NextResponse.json(...successResponse({ full_name: user.fullName }));
+  return NextResponse.json(...successResponse({ full_name: admin.fullName }));
 }

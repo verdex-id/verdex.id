@@ -1,11 +1,9 @@
 import { createToken } from "@/lib/jwt";
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
 import { comparePassword } from "@/lib/password";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   const schema = Joi.object({
@@ -16,7 +14,6 @@ export async function POST(request) {
   const req = await request.json();
 
   const invalidReq = schema.validate(req);
-
   if (invalidReq.error) {
     return NextResponse.json(
       ...failResponse("Invalid request format.", 400, invalidReq.error.details),
@@ -29,18 +26,17 @@ export async function POST(request) {
     },
   };
 
-  const user = await prisma.user.findUnique(arg);
+  const admin = await prisma.admin.findUnique(arg);
 
-  if (!user) {
+  if (!admin) {
     return NextResponse.json(
       ...failResponse("Username and/or password are incorrect.", 401),
     );
   }
 
-
   const isCorrectPassword = await comparePassword(
     req.password,
-    user.hashedPassword,
+    admin.hashedPassword,
   );
 
   if (!isCorrectPassword) {
@@ -49,8 +45,16 @@ export async function POST(request) {
     );
   }
 
+  if (!admin.isEmailVerified) {
+    return NextResponse.json(...failResponse("Unverified account.", 403));
+  }
+
+  if (admin.isBlocked) {
+    return NextResponse.json(...failResponse("Blocked account.", 403));
+  }
+
   const [accessToken, ATPayload, ATErr] = await createToken(
-    user.id,
+    admin.id,
     process.env.ACCESS_TOKEN_DURATION,
   );
 
@@ -59,7 +63,7 @@ export async function POST(request) {
   }
 
   const [refreshToken, RTPayload, RTErr] = await createToken(
-    user.id,
+    admin.id,
     process.env.REFRESH_TOKEN_DURATION,
   );
 
@@ -70,7 +74,7 @@ export async function POST(request) {
   arg = {
     data: {
       id: RTPayload.id,
-      userId: user.id,
+      adminId: admin.id,
       refreshToken: refreshToken,
       expiredAt: RTPayload.expiredAt,
     },
@@ -88,10 +92,10 @@ export async function POST(request) {
     access_token_expire_at: ATPayload.expiredAt,
     refresh_token: refreshToken,
     refresh_token_expire_at: RTPayload.expiredAt,
-    user: {
-      full_name: user.fullName,
-      email: user.email,
-      created_at: user.createdAt,
+    admin: {
+      full_name: admin.fullName,
+      email: admin.email,
+      created_at: admin.createdAt,
     },
   };
   return NextResponse.json(...successResponse(res));

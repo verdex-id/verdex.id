@@ -3,12 +3,17 @@ import { headers } from "next/headers";
 import { failResponse } from "./utils/response";
 import { verifyToken } from "./lib/jwt";
 
-export const authPayloadUserId = "authorization_payload_user_id";
+export const authPayloadAccountId = "authorization_payload_account_id";
 
 export async function middleware(request) {
   const currentPath = request.nextUrl.pathname;
 
-  if (!isIncludedPath(["api/verify-email"], currentPath)) {
+  if (
+    !isIncludedPath(
+      ["/verify-email", "/team", "/admin/settings/image"],
+      currentPath,
+    )
+  ) {
     try {
       await request.json();
     } catch (e) {
@@ -27,7 +32,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/testing", "/api/user"];
+  const authRoutes = ["/api/user/settings", "/api/admin/access", "/api/admin/settings"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
@@ -63,12 +68,12 @@ export async function middleware(request) {
       );
     }
 
-    if (!payload.userId) {
+    if (!payload.accountId) {
       return NextResponse.json(...errorResponse());
     }
 
-    const requestHeaders = new Headers(request.header);
-    requestHeaders.set(authPayloadUserId, payload.userId);
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(authPayloadAccountId, payload.accountId);
 
     return NextResponse.next({
       request: {
