@@ -1,12 +1,11 @@
 import { headers } from "next/headers";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
 import { authPayloadAccountId } from "@/middleware";
 import { prismaErrorCode } from "@/utils/prisma";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function PUT(request) {
   let user;

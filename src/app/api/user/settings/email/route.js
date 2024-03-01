@@ -1,15 +1,14 @@
 import { headers } from "next/headers";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { generateRandomString } from "@/utils/random";
 import { sendEmailVerification } from "@/services/email";
 import { prismaErrorCode } from "@/utils/prisma";
-import Joi, { when } from "joi";
+import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
 import { authPayloadAccountId } from "@/middleware";
 import { comparePassword } from "@/lib/password";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function PUT(request) {
   let schema;
@@ -48,11 +47,15 @@ export async function PUT(request) {
     return NextResponse.json(...failResponse("Password incorrect.", 401));
   }
 
+  if (user.email === req.new_email) {
+    return NextResponse.json(...failResponse("No changes were made.", 400));
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
       const expirationTime = new Date(
         new Date().getTime() +
-          process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
       );
       const secretCode = generateRandomString(32);
 
@@ -84,7 +87,7 @@ export async function PUT(request) {
 
       const info = await sendEmailVerification(
         user.email,
-        `${process.env.BASE_URL}/api/verify-email?verify_email_id=${verifyEmail.id}&secret_code=${verifyEmail.secretCode}`,
+        `${process.env.BASE_URL}/api/user/verify-email?verify_email_id=${verifyEmail.id}&secret_code=${verifyEmail.secretCode}`,
       );
 
       if (info.rejected.length > 0) {

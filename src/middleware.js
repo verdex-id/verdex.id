@@ -32,7 +32,7 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/user", "/api/admin/access", "/api/admin/settings"];
+  const authRoutes = ["/api/user/settings", "/api/admin/access", "/api/admin/settings"];
   if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
