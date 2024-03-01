@@ -3,9 +3,10 @@ userpass := "rizkia"
 useremail := "rizkia.as.actmp@gmail.com"
 newemail := "rizkia.as.pac@gmail.com"
 userfullname := "rizkia adhy syahputra"
-actoken :=  "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..xvPUqVXH1mPVqaI_0qN_LQ.0Izjb36S11W9W9NI4JxUSY8wEkHXwioMc5tTkCsxQ4Ae7hbD4UFowMq0EPW4mG8btM3gA5wKuyn18BcGGWJqKuwOQoEdSmHhYHOWqDy13Y--uuXCpjfk_449iqP0Nv1f_2UxdpncXLpinrwNFb3zh5UbIfiq13EepvjNZfwBc8-e6hB2rRrukW5ggNmDdA1s3D2q3IB5igwLCPgG_7uNqw.DLAfsQBYfXvRzs0YeD2b9Q" 
-reftoken := "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Ozb5rgorBUpWDnw4QaAyKA.YMer8edNwOI5xRj4Dy3Dsp6UpHOACTTvhLG0UJ_dvWQwiecAruVx6E6X4UJs1A2aARwAPgJhNq2ZhPAyY8gniNuOAk6ZaH7K8n7Ner5iR3OjlWTw0m-py0ldvOJcYPAmdDqCxvHSfhza9snRO8IjWnZDcjGjQdGHiahcYJ51l1dJwrW1d0ao9tTl8_s8LhHyflRy43CKDI9XphoybRZPlg.StN-ta2GbReVqy8vmPJ_Ow" 
+actoken :=  "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..aLDmgyJuRGRnc1OoWXIqMg.4eUDFcaRCxJc3pBDOA9tfOuCJluz76Fk2ojqJM4tfa3w3H_c_ZJ5lpCIZNT5wQohs3rwLbrpg3ceLCQkUxGyXsZpu0bDjQU2WL2tj7mP5o2__Hgl79cOWkXaUzFlBbCXzNPiRbe2m7_LpGRM7WHZiMnBVRSHBOwPDVMa48xUBP2QouAP5LkXwHxcx60K1N7MmBsBH37pJV4_BMQSaE6OEQ.bQBMK-S2xhQyPiAKQZYw9Q" 
+reftoken := "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..QzsrcUXQLVVhU5GT1YuQPw.DLKle3UDDUJNQaVZXoYQcQFJwxNVoTxiX5uFcbCKML8B7ro0fUOIJm-T-Gu2PdHcNkqi01DZ1JdKi7AvTtiWa1StWEIG2besmwrteGCSMYrHIi0gWJQa4CO38qPJCWYLQXq95ShBiWRP8HZqE-O7tOVMFGI4czW0DKbGPUtaVzgLQptUN_6pwuMKqprr2SECWU-ht5PAB3_lUIU6d8UFig.9tIDrGoVRIBmEXNIA0hubw" 
 
+adminId := "c1b500a3-644c-417a-93b8-1c8692045cd0" 
 
 
 user_register:
@@ -29,31 +30,31 @@ user_refresh:
 
 
 
+admin_refresh:
+	curl -X POST -H "Content-Type: application/json" -d '{"refresh_token":$(reftoken)}' $(apiurl)/admin/token | jq
 
 admin_register:
-	echo -n '{"password":$(userpass), "email" :$(useremail), "full_name" : $(userfullname)}' | http -f POST $(apiurl)/admin/register
+	curl -X POST -H "Content-Type: application/json" -d '{"password":$(userpass), "email":$(useremail), "full_name":$(userfullname)}' $(apiurl)/admin/register | jq
 
 admin_login:
-	echo -n '{"password":$(userpass) , "email" : $(useremail)}' | http -f POST $(apiurl)/admin/login | jq .data.access_token 
+	curl -X POST -H "Content-Type: application/json" -d '{"password":$(userpass), "email":$(useremail)}' $(apiurl)/admin/login | jq
 
 admin_update_fname:
-	echo -n '{ "new_name" : "rizkia"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/admin/settings/name
+	curl -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $(actoken)" -d '{"new_name":"rizkia adhy syahputra"}' $(apiurl)/admin/settings/name | jq
 
 admin_update_email:
-	echo -n '{"password":$(userpass), "new_email" : $(useremail)}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/admin/settings/email
+	curl -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $(actoken)" -d '{"password":$(userpass), "new_email":$(useremail)}' $(apiurl)/admin/settings/email | jq
 
 admin_update_password:
-	echo -n '{"password":$(userpass), "new_password" :"rizkia"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/admin/settings/password
+	curl -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $(actoken)" -d '{"password":$(userpass), "new_password":"rizkia"}' $(apiurl)/admin/settings/password | jq
 
 admin_up_img:
 	curl -X POST -F "file=@tes.jpeg" -H "Authorization: bearer $(actoken)" $(apiurl)/admin/settings/image
 
 admin_toggle_access:
-	echo -n '{ "admin_id" : "949ec435-280f-4b43-9d79-eab736b9d1c9"}' | http -A bearer -a $(actoken) -f PUT $(apiurl)/admin/access
+	curl -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $(actoken)" -d '{"admin_id": $(adminId) }' $(apiurl)/admin/access | jq
 
 get_team:
-	http -f GET $(apiurl)/team
+	curl -X GET $(apiurl)/team | jq
 
-mkff:
-	alias mkff="make \$( grep -oP '\.PHONY:\s+(.*)' Makefile | tr ' ' '\n' | fzf)"
 

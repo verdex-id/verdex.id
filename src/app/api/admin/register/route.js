@@ -1,13 +1,12 @@
 import { prismaErrorCode } from "@/utils/prisma";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import Joi from "joi";
 import { sendEmailVerification } from "@/services/email";
 import { generateRandomString } from "@/utils/random";
 import { hashPassword } from "@/lib/password";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   const schema = Joi.object({

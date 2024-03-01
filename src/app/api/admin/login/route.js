@@ -1,11 +1,9 @@
 import { createToken } from "@/lib/jwt";
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
 import { comparePassword } from "@/lib/password";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function POST(request) {
   const schema = Joi.object({

@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import { authPayloadAccountId } from "@/middleware";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function PUT(request) {
   const schema = Joi.object({
@@ -13,7 +12,6 @@ export async function PUT(request) {
   });
 
   const req = await request.json();
-
   const invalidReq = schema.validate(req);
   if (invalidReq.error) {
     return NextResponse.json(
@@ -24,7 +22,7 @@ export async function PUT(request) {
   const payloadAdminId = headers().get(authPayloadAccountId);
 
   const author = await prisma.admin.findUnique({
-    where: { id: payloadAdminId, isBlocked: false },
+    where: { id: payloadAdminId, isBlocked: false, isEmailVerified: true },
   });
 
   if (!author) {
@@ -53,14 +51,12 @@ export async function PUT(request) {
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      // return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
       return NextResponse.json(...failResponse("Invalid request", 409));
     }
 
     if (!admin) {
       return NextResponse.json(...failResponse("Account not found.", 404));
     }
-    console.log(e);
 
     return NextResponse.json(...errorResponse());
   }
