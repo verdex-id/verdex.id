@@ -6,14 +6,14 @@ import { verifyToken } from "./lib/jwt";
 export const authPayloadAccountId = "authorization_payload_account_id";
 
 export async function middleware(request) {
-  const currentPath = request.nextUrl.pathname;
+  const jsonRoutes = [
+    ["/api/verify-email"],
+    ["/api/team"],
+    ["/api/admin/settings/image"],
+    ["/api/course", ["GET"]],
+  ];
 
-  if (
-    !isIncludedPath(
-      ["/verify-email", "/team", "/admin/settings/image"],
-      currentPath,
-    )
-  ) {
+  if (!checkRoute(jsonRoutes, request)) {
     try {
       await request.json();
     } catch (e) {
@@ -32,8 +32,14 @@ export async function middleware(request) {
     }
   }
 
-  const authRoutes = ["/api/user/settings", "/api/admin/access", "/api/admin/settings"];
-  if (authRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
+  const authRoutes = [
+    ["/api/user/settings"],
+    ["/api/admin/settings"],
+    ["/api/admin/access"],
+    ["/api/course", ["POST", "DELETE", "PUT"]],
+  ];
+
+  if (checkRoute(authRoutes, request)) {
     let authorization = headers().get("authorization");
     if (authorization === null) {
       return Response.json(
@@ -87,8 +93,14 @@ export const config = {
   matcher: ["/api/:path*"],
 };
 
-function isIncludedPath(paths, path) {
-  const regex = new RegExp(paths.map((item) => `(${item})`).join("|"));
-
-  return regex.test(path);
+function checkRoute(routes, request) {
+  return routes.some((route) => {
+    if (request.nextUrl.pathname.startsWith(route[0])) {
+      if (route[1]) {
+        return route[1].some((method) => method === request.method);
+      }
+      return true;
+    }
+    return false;
+  });
 }
