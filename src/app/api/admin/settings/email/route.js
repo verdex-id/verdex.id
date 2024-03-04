@@ -58,7 +58,7 @@ export async function PUT(request) {
       );
       const secretCode = generateRandomString(32);
 
-      let arg = {
+      admin = await tx.admin.update({
         where: {
           id: admin.id,
           NOT: {
@@ -69,20 +69,16 @@ export async function PUT(request) {
           email: req.new_email,
           isEmailVerified: false,
         },
-      };
+      });
 
-      admin = await tx.admin.update(arg);
-
-      arg = {
+      const verifyEmail = await tx.verifyEmail.create({
         data: {
           adminId: admin.id,
           email: admin.email,
           secretCode: secretCode,
           expiredAt: expirationTime,
         },
-      };
-
-      const verifyEmail = await tx.verifyEmail.create(arg);
+      });
 
       const info = await sendEmailVerification(
         admin.email,

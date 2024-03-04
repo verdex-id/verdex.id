@@ -46,24 +46,22 @@ export async function POST(request) {
       );
       const secretCode = generateRandomString(32);
 
-      let arg = {
+      user = await tx.user.create({
         data: {
           fullName: req.full_name,
           hashedPassword: hashedPassword,
           email: req.email,
         },
-      };
-      user = await tx.user.create(arg);
+      });
 
-      arg = {
+      const verifyEmail = await tx.verifyEmail.create({
         data: {
           userId: user.id,
           email: user.email,
           secretCode: secretCode,
           expiredAt: expirationTime,
         },
-      };
-      const verifyEmail = await tx.verifyEmail.create(arg);
+      });
 
       const info = await sendEmailVerification(
         user.email,
@@ -78,7 +76,6 @@ export async function POST(request) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
     }
-
     return NextResponse.json(
       ...errorResponse(
         "Unable to register at this time. Please try again later.",

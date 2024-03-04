@@ -27,20 +27,18 @@ export async function PUT(request) {
     );
   }
 
-  const arg = {
-    where: {
-      id: payloadUserId,
-      NOT: {
+  try {
+    user = await prisma.user.update({
+      where: {
+        id: payloadUserId,
+        NOT: {
+          fullName: req.new_name,
+        },
+      },
+      data: {
         fullName: req.new_name,
       },
-    },
-    data: {
-      fullName: req.new_name,
-    },
-  };
-
-  try {
-    user = await prisma.user.update(arg);
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));

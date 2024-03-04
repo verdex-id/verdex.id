@@ -7,15 +7,78 @@ import Joi from "joi";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  let courses = await prisma.course.findMany({
-    select: { slug: true, title: true, description: true, price: true },
+export async function GET(req, { params }) {
+  const course = await prisma.course.findUnique({
+    where: { slug: params.slug },
+    select: {
+      slug: true,
+      title: true,
+      description: true,
+      price: true,
+      admin: {
+        select: {
+          fullName: true,
+        },
+      },
+    },
   });
 
-  return NextResponse.json(...successResponse({ courses: courses }));
+  if (!course) {
+    return NextResponse.json(...failResponse("Course not found.", 404));
+  }
+
+  const res = {
+    slug: course.slug,
+    title: course.title,
+    description: course.description,
+    price: course.price,
+    creator: course.admin.fullName,
+  };
+
+  return NextResponse.json(...successResponse(res));
 }
 
-export async function POST(request) {
+export async function DELETE(req, { params }) {
+  const payloadAdminId = headers().get(authPayloadAccountId);
+
+  const admin = await prisma.admin.findUnique({
+    where: { id: payloadAdminId, isBlocked: false, isEmailVerified: true },
+  });
+
+  if (!admin) {
+    return NextResponse.json(
+      ...failResponse(
+        "Unauthorized account: You do not have permission to perform this action.",
+        401,
+      ),
+    );
+  }
+
+  let course;
+  try {
+    course = await prisma.course.delete({
+      where: {
+        slug: params.slug,
+        adminId: admin.id,
+      },
+      select: {
+        slug: true,
+        title: true,
+      },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        ...failResponse("Invalid request", 409, e.message),
+      );
+    }
+    return NextResponse.json(...errorResponse());
+  }
+
+  return NextResponse.json(...successResponse(course));
+}
+
+export async function PUT(request, { params }) {
   const schema = Joi.object({
     title: Joi.string().min(2).max(100).required(),
     description: Joi.string().min(10).max(3_000).required(),
@@ -46,14 +109,16 @@ export async function POST(request) {
   }
 
   let course;
-
   try {
-    course = await prisma.course.create({
+    course = await prisma.course.update({
+      where: {
+        slug: params.slug,
+        adminId: admin.id,
+      },
       data: {
         title: req.title,
         description: req.description,
         price: parseInt(req.price),
-        adminId: admin.id,
         slug: createSlug(req.title),
       },
       select: {

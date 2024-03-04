@@ -27,16 +27,14 @@ export async function POST(request) {
     );
   }
 
-  let arg = {
-    where: {
-      id: RTPayload.id,
-    },
-  };
-
   let session;
 
   try {
-    session = await prisma.session.findUnique(arg);
+    session = await prisma.session.findUnique({
+      where: {
+        id: RTPayload.id,
+      },
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse(prismaErrorCode[e.code], 400));

@@ -19,6 +19,7 @@
     "nodemailer": "^6.9.9",
     "react": "^18",
     "react-dom": "^18",
+    "slugify": "^1.6.6",
     "uploadthing": "^6.4.1"
   },
   "devDependencies": {

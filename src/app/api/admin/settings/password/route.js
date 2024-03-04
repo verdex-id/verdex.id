@@ -50,18 +50,16 @@ export async function PUT(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  const arg = {
-    where: {
-      id: admin.id,
-      hashedPassword: admin.hashedPassword,
-    },
-    data: {
-      hashedPassword: newHashedPassword,
-    },
-  };
-
   try {
-    admin = await prisma.admin.update(arg);
+    admin = await prisma.admin.update({
+      where: {
+        id: admin.id,
+        hashedPassword: admin.hashedPassword,
+      },
+      data: {
+        hashedPassword: newHashedPassword,
+      },
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse("Invalid request", 409));

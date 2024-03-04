@@ -57,4 +57,28 @@ model Admin {
   createdAt       DateTime      @default(now())
   sessions        Session[]
   verifyEmails    VerifyEmail[]
+  courses         Course[]
+}
+
+model Course {
+  id          Int      @id @unique @default(autoincrement())
+  slug        String   @unique
+  title       String   @unique
+  description String?  @db.VarChar(3000)
+  price       Int?
+  createdAt   DateTime @default(now())
+  parts       Part[]
+  admin       Admin    @relation(fields: [adminId], references: [id])
+  adminId     String
+}
+
+model Part {
+  id        Int      @id @unique @default(autoincrement())
+  slug      String   @unique
+  title     String   @unique
+  url       String   @unique
+  index     Int
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
 }
