@@ -62,6 +62,7 @@ model Admin {
 
 model Course {
   id          Int      @id @unique @default(autoincrement())
+  slug        String   @unique
   title       String   @unique
   description String?  @db.VarChar(3000)
   price       Int?
@@ -73,6 +74,7 @@ model Course {
 
 model Part {
   id        Int      @id @unique @default(autoincrement())
+  slug      String   @unique
   title     String   @unique
   url       String   @unique
   index     Int

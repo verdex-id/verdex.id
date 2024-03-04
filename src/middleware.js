@@ -7,10 +7,11 @@ export const authPayloadAccountId = "authorization_payload_account_id";
 
 export async function middleware(request) {
   const jsonRoutes = [
-    ["/api/verify-email"],
+    ["/api/user/verify-email"],
+    ["/api/admin/verify-email"],
     ["/api/team"],
     ["/api/admin/settings/image"],
-    ["/api/course", ["GET"]],
+    ["/api/course", ["GET", "DELETE"]],
   ];
 
   if (!checkRoute(jsonRoutes, request)) {
