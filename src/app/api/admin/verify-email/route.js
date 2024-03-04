@@ -47,6 +47,10 @@ export async function GET(request) {
         data: {
           isEmailVerified: true,
         },
+        select: {
+          email: true,
+          isEmailVerified: true
+        }
       });
     });
   } catch (e) {

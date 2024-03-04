@@ -3,6 +3,7 @@ import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { taintUniqueValue } from "next/dist/server/app-render/rsc/taint";
 
 export async function GET(request) {
   const schema = Joi.object({
@@ -45,6 +46,10 @@ export async function GET(request) {
           id: verifyEmail.userId,
         },
         data: {
+          isEmailVerified: true,
+        },
+        select: {
+          email: true,
           isEmailVerified: true,
         },
       });

@@ -40,28 +40,35 @@ export async function POST(request) {
     await prisma.$transaction(async (tx) => {
       const expirationTime = new Date(
         new Date().getTime() +
-          process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
       );
       const secretCode = generateRandomString(32);
 
-      let arg = {
+      admin = await tx.admin.create({
         data: {
           fullName: req.full_name,
           hashedPassword: hashedPassword,
           email: req.email,
         },
-      };
-      admin = await tx.admin.create(arg);
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+        },
+      });
 
-      arg = {
+      const verifyEmail = await tx.verifyEmail.create({
         data: {
           adminId: admin.id,
           email: admin.email,
           secretCode: secretCode,
           expiredAt: expirationTime,
         },
-      };
-      const verifyEmail = await tx.verifyEmail.create(arg);
+        select: {
+          id: true,
+          secretCode: true,
+        },
+      });
 
       const info = await sendEmailVerification(
         admin.email,

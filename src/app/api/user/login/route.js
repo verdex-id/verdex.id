@@ -21,13 +21,11 @@ export async function POST(request) {
     );
   }
 
-  let arg = {
+  const user = await prisma.user.findUnique({
     where: {
       email: req.email,
     },
-  };
-
-  const user = await prisma.user.findUnique(arg);
+  });
 
   if (!user) {
     return NextResponse.json(
@@ -73,16 +71,17 @@ export async function POST(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  arg = {
+  const session = await prisma.session.create({
     data: {
       id: RTPayload.id,
       userId: user.id,
       refreshToken: refreshToken,
       expiredAt: RTPayload.expiredAt,
     },
-  };
-
-  const session = await prisma.session.create(arg);
+    select: {
+      id: true,
+    },
+  });
 
   if (!session) {
     return NextResponse.json(...errorResponse());

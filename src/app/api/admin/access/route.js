@@ -47,6 +47,10 @@ export async function PUT(request) {
         data: {
           isBlocked: !admin.isBlocked,
         },
+        select: {
+          email: true,
+          isBlocked: true,
+        },
       });
     });
   } catch (e) {

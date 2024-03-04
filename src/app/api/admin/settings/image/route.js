@@ -68,6 +68,9 @@ export async function POST(request) {
       data: {
         image: upload.data.key,
       },
+      select: {
+        image: true,
+      },
     });
   } catch (e) {
     return NextResponse.json(...errorResponse());
