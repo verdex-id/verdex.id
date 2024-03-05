@@ -3,6 +3,7 @@ import HomeFAQ from "@/components/page/home/faq";
 import HomeFeedback from "@/components/page/home/feedback";
 import HomeHero from "@/components/page/home/hero";
 import HomeNewCourse from "@/components/page/home/new-course";
+
 export default function Home() {
   return (
     <>

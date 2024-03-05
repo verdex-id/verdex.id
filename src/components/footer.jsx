@@ -4,47 +4,21 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="p-5 pb-10 md:pb-52 pt-10 md:pt-52 bg-gradient-to-t from-dark-900 via-blue-900 to-blue-300  mx-auto00">
+    <footer className="p-5 pb-10 md:pb-52 pt-10 bg-gradient-to-t from-dark-900 via-blue-900 to-blue-300 mx-auto">
       {/* Company Logo Section */}
-      <div className="flex flex-col md:flex-row md:justify-between items-start border-t-2 border-t-blue-1">
-        <div className="w-full md:w-1/5 mb-8 md:mb-0 md:flex md:flex-col items-center">
+      <div className="flex flex-col md:flex-row md:justify-evenly items-center md:items-start">
+        <div className="mb-8 md:mb-0 md:flex md:flex-col items-center">
           <Image
             src="/logo/verdex.svg"
             alt="Company Logo"
             width={138}
             height={112}
-            className="mb-2 md:mb-0 mt-8 md:mt-16 mx-auto"
+            className="mb-2 md:mb-0 mt-8 md:mt-16"
           />
         </div>
 
-        {/* Resources Section */}
-        <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
-          <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
-            Resources
-            <Image
-              src="/icons/arrow.svg"
-              alt="Arrow"
-              width={17}
-              height={17}
-              className="ml-4 mb-2"
-            />
-          </h3>
-          <ul className="list-none text-gray-300 py-2 md:py-4 gap-4 text-left">
-            <li>
-              <Link href="/resource-1">Resource 1</Link>
-            </li>
-            <li>
-              <Link href="/resource-2">Resource 2</Link>
-            </li>
-            <li>
-              <Link href="/resource-3">Resource 3</Link>
-            </li>
-          </ul>
-        </div>
-        {/* Resources Section End*/}
-
         {/* Navigation Section */}
-        <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
+        <div className="mb-8 md:mb-0 flex flex-col items-start">
           <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
             Navigation
             <Image
@@ -73,7 +47,7 @@ const Footer = () => {
         {/* Navigation Section End*/}
 
         {/* Social Media Section */}
-        <div className="w-full md:w-1/5 mb-8 md:mb-0 flex flex-col items-start">
+        <div className="mb-8 md:mb-0 flex flex-col items-start">
           <h3 className="text-2xl font-medium leading-8 tracking-normal text-[#FFFFFF] mb-2 mt-14 flex items-center">
             Social Media
             <Image
@@ -86,13 +60,14 @@ const Footer = () => {
           </h3>
           <ul className="list-none text-gray-300 gap-4 mt-3 text-left">
             <li>
-              <Link href="/linkedin">Linkedin</Link>
+              <Link href="https://github.com/verdex-id" target="_blank">
+                GitHub
+              </Link>
             </li>
             <li>
-              <Link href="/github">Github</Link>
-            </li>
-            <li>
-              <Link href="/discord">Discord</Link>
+              <Link href="/discord" target="_blank">
+                Discord
+              </Link>
             </li>
           </ul>
         </div>

@@ -44,7 +44,7 @@ export default function HomeFeedback() {
                 <input
                   type="text"
                   placeholder="Full name"
-                  className="px-4 md:px-7 py-4 md:py-7 w-full rounded-full bg-blue-900"
+                  className="px-4 md:px-7 py-4 md:py-7 w-full rounded-3xl bg-blue-900"
                 />
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function HomeFeedback() {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="px-4 md:px-7 py-4 md:py-7 w-full rounded-full bg-blue-900"
+                  className="px-4 md:px-7 py-4 md:py-7 w-full rounded-3xl  bg-blue-900"
                 />
               </div>
             </div>
@@ -81,7 +81,7 @@ export default function HomeFeedback() {
                 />
                 <textarea
                   placeholder="Message"
-                  className="resize-none rounded-2xl px-4 md:px-7 py-4 md:py-7 w-full bg-blue-900 h-[200px] md:focus:border-blue-300 md:focus:outline-none border-2 border-blue-900"
+                  className="resize-none rounded-3xl px-4 md:px-7 py-4 md:py-7 w-full bg-blue-900 h-[200px] md:focus:border-blue-300 md:focus:outline-none border-2 border-blue-900"
                 />
               </div>
             </div>

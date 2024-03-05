@@ -30,7 +30,7 @@ export default function HomeHero() {
 
           {/* Tombol Mulai Belajar dan Gambar SVG */}
           <div className="flex items-center justify-center">
-            <Link href="/learning">
+            <Link href="/course">
               <button className="text-white text-2xl md:text-3xl lg:text-4xl font-medium bg-transparent underline border-white py-2 px-4 rounded">
                 Start Learning
               </button>
