@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function HomeNewCourse() {
+export default function Course() {
   const [showDetail, setShowDetail] = useState(false);
   const [dummyData, setDummyData] = useState([
     {
@@ -26,37 +26,32 @@ export default function HomeNewCourse() {
       image_url: "/logo/verdex.svg",
     },
   ]);
-
   return (
     <>
-      <div className="bg-navy-900 min-h-dvh">
-        <div className="w-full max-w-screen-xl mx-auto p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-4 items-start">
+      <div className="bg-navy-900 min-h-dvh w-full">
+        <div className="w-full max-w-screen-xl mx-auto px-8 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-2">
             <div className="flex items-center gap-8">
-              <h1 className="font-medium text-[32px] lg:text-[64px] text-nowrap">
-                New Course
+              <h1 className="font-medium text-2xl md:text-[64px]">
+                All Course
               </h1>
-              <img
-                src="/icons/overview_keys.svg"
-                alt=""
-                className="w-[32px] lg:w-[64px]"
+              <Image
+                src={"/icons/overview_keys.svg"}
+                width={0}
+                height={0}
+                className="w-max h-max"
               />
             </div>
-            <div className="mt-5">
-              <p>
-                Hai Verumians 👋! Berikut adalah daftar{" "}
-                <Link href={"/course"} className="text-blue-200">
-                  course
-                </Link>{" "}
-                terbaru. Yuk pelajari materi favoritmu, mari tumbuh berkembang
-                bersama <Link href={"/"}>verdex</Link>.
+            <div>
+              <p className="text-paragraph">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Corporis aliquid neque distinctio magni, ratione libero animi
+                adipisci, voluptatem amet rem quod eos repudiandae
+                exercitationem nostrum doloremque porro fugit, id ipsa.
               </p>
-              <Link href={"/course"} className="btn-outline mt-3">
-                View All Course
-              </Link>
             </div>
           </div>
-          <div className="mt-[64px] grid grid-cols-1 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-16">
             {dummyData.map((data, i) => (
               <div
                 key={i}
