@@ -67,7 +67,7 @@ export async function POST(request) {
         title: req.title,
         description: req.description,
         price: parseInt(req.price),
-        adminId: admin.id,
+        adminId: admin.admin.id,
         slug: createSlug(req.title),
       },
       select: {
@@ -78,6 +78,8 @@ export async function POST(request) {
         price: true,
       },
     });
+
+
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(
