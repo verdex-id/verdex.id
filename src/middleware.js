@@ -14,6 +14,7 @@ export async function middleware(request) {
     ["/api/course", ["GET"]],
     ["/api/admin/course", ["GET", "DELETE"]],
     ["/api/part", ["GET"]],
+    ["/api/admin/part", ["GET", "DELETE"]],
   ];
 
   if (!checkRoute(jsonRoutes, request)) {
@@ -40,6 +41,7 @@ export async function middleware(request) {
     ["/api/admin/settings"],
     ["/api/admin/access"],
     ["/api/admin/course"],
+    ["/api/admin/part"],
   ];
 
   if (checkRoute(authRoutes, request)) {
