@@ -87,7 +87,6 @@ CREATE TABLE `Part` (
     UNIQUE INDEX `Part_id_key`(`id`),
     UNIQUE INDEX `Part_slug_key`(`slug`),
     UNIQUE INDEX `Part_title_key`(`title`),
-    UNIQUE INDEX `Part_url_key`(`url`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

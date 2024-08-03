@@ -76,7 +76,7 @@ model Part {
   id        Int      @id @unique @default(autoincrement())
   slug      String   @unique
   title     String   @unique
-  url       String   @unique
+  url       String   
   index     Int
   createdAt DateTime @default(now())
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
