@@ -15,6 +15,18 @@ export async function GET(req, { params }) {
           fullName: true,
         },
       },
+      parts: {
+        select: {
+          slug: true,
+          title: true,
+          url: true,
+          index: true,
+          createdAt: true,
+        },
+        orderBy: {
+          index: "asc",
+        },
+      },
     },
   });
 
@@ -28,6 +40,7 @@ export async function GET(req, { params }) {
     description: course.description,
     price: course.price,
     creator: course.admin.fullName,
+    parts: course.parts
   };
 
   return NextResponse.json(...successResponse(res));

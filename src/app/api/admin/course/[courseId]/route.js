@@ -28,6 +28,19 @@ export async function GET(req, { params }) {
             fullName: true,
           },
         },
+        parts: {
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            url: true,
+            index: true,
+            createdAt: true,
+          },
+          orderBy: {
+            index: "asc",
+          },
+        },
       },
     });
 
