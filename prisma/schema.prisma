@@ -27,9 +27,9 @@ model Session {
   isBlocked    Boolean  @default(false)
   createdAt    DateTime @default(now())
   expiredAt    DateTime
-  user         User?     @relation(fields: [userId], references: [id])
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String?
-  admin        Admin?   @relation(fields: [adminId], references: [id])
+  admin        Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
   adminId      String?
 }
 
@@ -40,8 +40,8 @@ model VerifyEmail {
   isUsed     Boolean  @default(false)
   createdAt  DateTime @default(now())
   expiredAt  DateTime
-  user       User?    @relation(fields: [userId], references: [id])
-  admin      Admin?   @relation(fields: [adminId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
   userId     String?
   adminId    String?
 }
@@ -68,17 +68,17 @@ model Course {
   price       Int?
   createdAt   DateTime @default(now())
   parts       Part[]
-  admin       Admin    @relation(fields: [adminId], references: [id])
-  adminId     String
+  admin       Admin?    @relation(fields: [adminId], references: [id])
+  adminId     String?
 }
 
 model Part {
   id        Int      @id @unique @default(autoincrement())
   slug      String   @unique
   title     String   @unique
-  url       String   @unique
+  url       String   
   index     Int
   createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  Int
 }

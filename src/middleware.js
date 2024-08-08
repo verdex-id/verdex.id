@@ -11,7 +11,10 @@ export async function middleware(request) {
     ["/api/admin/verify-email"],
     ["/api/team"],
     ["/api/admin/settings/image"],
-    ["/api/course", ["GET", "DELETE"]],
+    ["/api/course", ["GET"]],
+    ["/api/admin/course", ["GET", "DELETE"]],
+    ["/api/part", ["GET"]],
+    ["/api/admin/part", ["GET", "DELETE"]],
   ];
 
   if (!checkRoute(jsonRoutes, request)) {
@@ -37,7 +40,8 @@ export async function middleware(request) {
     ["/api/user/settings"],
     ["/api/admin/settings"],
     ["/api/admin/access"],
-    ["/api/course", ["POST", "DELETE", "PUT"]],
+    ["/api/admin/course"],
+    ["/api/admin/part"],
   ];
 
   if (checkRoute(authRoutes, request)) {
