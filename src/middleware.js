@@ -13,6 +13,7 @@ export async function middleware(request) {
     ["/api/admin/settings/image"],
     ["/api/course", ["GET"]],
     ["/api/admin/course", ["GET", "DELETE"]],
+    ["/api/admin/banner", ["GET", "POST", "DELETE"]],
     ["/api/part", ["GET"]],
     ["/api/admin/part", ["GET", "DELETE"]],
   ];
@@ -42,6 +43,7 @@ export async function middleware(request) {
     ["/api/admin/access"],
     ["/api/admin/course"],
     ["/api/admin/part"],
+    ["/api/admin/banner"],
   ];
 
   if (checkRoute(authRoutes, request)) {
