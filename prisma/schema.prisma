@@ -73,14 +73,15 @@ model Course {
 }
 
 model Part {
-  id        Int      @id @unique @default(autoincrement())
-  slug      String   @unique
-  title     String   @unique
-  url       String   
-  index     Int
-  createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId  Int
+  id                Int      @id @unique @default(autoincrement())
+  slug              String   @unique
+  title             String   @unique
+  requiresPurchase  Boolean @default(false)
+  url               String   
+  index             Int
+  createdAt         DateTime @default(now())
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId          Int
 }
 
 model Banner {
