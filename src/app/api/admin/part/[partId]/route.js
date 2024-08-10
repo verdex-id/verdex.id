@@ -5,7 +5,6 @@ import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import { createSlug } from "@/utils/slugify";
 import { Prisma } from "@prisma/client";
 import Joi from "joi";
-import { createSearchParamsBailoutProxy } from "next/dist/client/components/searchparams-bailout-proxy";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
