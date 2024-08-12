@@ -61,17 +61,19 @@ model Admin {
 }
 
 model Course {
-  id          Int      @id @unique @default(autoincrement())
-  slug        String   @unique
-  title       String   @unique
-  description String?  @db.VarChar(3000)
-  price       Int?
-  createdAt   DateTime @default(now())
-  parts       Part[]
-  admin       Admin?    @relation(fields: [adminId], references: [id])
-  adminId     String?
+  id            Int      @id @unique @default(autoincrement())
+  slug          String   @unique
+  title         String   @unique
+  description   String?  @db.VarChar(3000)
+  image         String?
+  price         Int?
+  crossOutPrice Int?
+  createdAt     DateTime @default(now())
+  parts         Part[]
+  admin         Admin?    @relation(fields: [adminId], references: [id])
+  adminId       String?
+  // enrollments   Enrollment[]
 }
-
 model Part {
   id                Int      @id @unique @default(autoincrement())
   slug              String   @unique

@@ -13,6 +13,7 @@ export async function middleware(request) {
     ["/api/admin/settings/image"],
     ["/api/course", ["GET"]],
     ["/api/admin/course", ["GET", "DELETE"]],
+    ["/api/admin/course/image", ["POST"]],
     ["/api/admin/banner", ["GET", "POST", "DELETE"]],
     ["/api/part", ["GET"]],
     ["/api/admin/part", ["GET", "DELETE"]],

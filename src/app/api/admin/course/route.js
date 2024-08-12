@@ -21,7 +21,9 @@ export async function GET() {
         slug: true,
         title: true,
         description: true,
+        image: true,
         price: true,
+        crossOutPrice: true,
       },
     });
   } catch (e) {
@@ -47,7 +49,12 @@ export async function POST(request) {
     const schema = Joi.object({
       title: Joi.string().min(2).max(100).required(),
       description: Joi.string().min(10).max(3_000).required(),
-      price: Joi.number().min(0).max(1_000_000).integer().required(),
+      crossout_price: Joi.number().min(0).max(1_000_000).integer(),
+      price: Joi.alternatives().conditional("crossout_price", {
+        not: null,
+        then: Joi.number().min(0).max(1_000_000).integer().required(),
+        otherwise: Joi.number().min(0).max(1_000_000).integer(),
+      }),
     });
 
     let req = await request.json();
@@ -62,24 +69,32 @@ export async function POST(request) {
       throw new FailError(admin.error, admin.errorCode);
     }
 
+    const courseData = {
+      title: req.title,
+      description: req.description,
+      slug: createSlug(req.title),
+      adminId: admin.admin.id,
+    };
+
+    if (req.price) {
+      courseData["price"] = parseInt(req.price);
+    }
+
+    if (req.crossout_price) {
+      courseData["crossOutPrice"] = parseInt(req.crossout_price);
+    }
+
     course = await prisma.course.create({
-      data: {
-        title: req.title,
-        description: req.description,
-        price: parseInt(req.price),
-        adminId: admin.admin.id,
-        slug: createSlug(req.title),
-      },
+      data: courseData,
       select: {
         id: true,
         slug: true,
         title: true,
         description: true,
         price: true,
+        crossOutPrice: true,
       },
     });
-
-
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(
