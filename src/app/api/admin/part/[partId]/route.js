@@ -22,6 +22,7 @@ export async function GET(req, { params }) {
         slug: true,
         title: true,
         url: true,
+        requiresPurchase: true,
         index: true,
         createdAt: true,
         courseId: true,
@@ -58,6 +59,7 @@ export async function PATCH(request, { params }) {
         .max(70)
         .required(),
       url: Joi.string().uri().required(),
+      require_purchase: Joi.boolean().allow("true", "false").required(),
       index: Joi.number().min(1),
     });
 
@@ -108,6 +110,7 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
+              requiresPurchase: req.require_purchase,
               index: newIndex,
             },
           });
@@ -141,6 +144,7 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
+              requiresPurchase: req.require_purchase,
               index: newIndex,
             },
           });
@@ -170,9 +174,11 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
+              requiresPurchase: req.require_purchase,
             },
           });
         }
+      // console.log(updatedPart);
       });
     } else {
       updatedPart = await prisma.part.update({
@@ -183,6 +189,7 @@ export async function PATCH(request, { params }) {
           title: req.title,
           slug: createSlug(req.title),
           url: req.url,
+          requiresPurchase: req.require_purchase,
         },
       });
     }

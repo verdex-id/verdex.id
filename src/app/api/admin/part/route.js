@@ -23,6 +23,7 @@ export async function POST(request) {
         .max(70)
         .required(),
       url: Joi.string().uri().required(),
+      require_purchase: Joi.boolean().allow("true", "false").required(),
       index: Joi.number().min(1),
     });
 
@@ -47,6 +48,7 @@ export async function POST(request) {
           title: req.title,
           slug: createSlug(req.title),
           url: req.url,
+          requiresPurchase: req.require_purchase,
           index: 1,
         },
       });
@@ -57,6 +59,7 @@ export async function POST(request) {
           title: req.title,
           slug: createSlug(req.title),
           url: req.url,
+          requiresPurchase: req.require_purchase,
           index: lastIndex.index + 1,
         },
       });
@@ -81,6 +84,7 @@ export async function POST(request) {
             title: req.title,
             slug: createSlug(req.title),
             url: req.url,
+            requiresPurchase: req.require_purchase,
             index: newIndex,
           },
         });
