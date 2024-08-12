@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { utapi } from "@/lib/uploadthing";
 import { fetchAdminIfAuthorized } from "@/utils/check-admin";
 import { FailError } from "@/utils/custom-error";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
@@ -23,6 +24,8 @@ export async function GET(req, { params }) {
         title: true,
         description: true,
         price: true,
+        crossOutPrice: true,
+        image: true,
         admin: {
           select: {
             fullName: true,
@@ -65,14 +68,14 @@ export async function GET(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
-  let course;
+  let deletedCourse;
   try {
     const admin = await fetchAdminIfAuthorized();
     if (admin.error) {
       throw new FailError(admin.error, admin.errorCode);
     }
 
-    course = await prisma.course.delete({
+    deletedCourse = await prisma.course.delete({
       where: {
         id: parseInt(params.courseId),
         adminId: admin.id,
@@ -80,8 +83,13 @@ export async function DELETE(req, { params }) {
       select: {
         slug: true,
         title: true,
+        image: true,
       },
     });
+
+    if (deletedCourse.image) {
+      await utapi.deleteFiles(deletedCourse.image);
+    }
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(
@@ -96,7 +104,7 @@ export async function DELETE(req, { params }) {
     return NextResponse.json(...errorResponse());
   }
 
-  return NextResponse.json(...successResponse(course));
+  return NextResponse.json(...successResponse(deletedCourse));
 }
 
 export async function PUT(request, { params }) {
@@ -110,7 +118,12 @@ export async function PUT(request, { params }) {
     const schema = Joi.object({
       title: Joi.string().min(2).max(100).required(),
       description: Joi.string().min(10).max(3_000).required(),
-      price: Joi.number().min(0).max(1_000_000).integer().required(),
+      crossout_price: Joi.number().min(0).max(1_000_000).integer(),
+      price: Joi.alternatives().conditional("crossout_price", {
+        not: null,
+        then: Joi.number().min(0).max(1_000_000).integer().required(),
+        otherwise: Joi.number().min(0).max(1_000_000).integer(),
+      }),
     });
 
     let req = await request.json();
@@ -120,22 +133,39 @@ export async function PUT(request, { params }) {
     }
     req = req.value;
 
+    const courseData = {
+      title: req.title,
+      description: req.description,
+      slug: createSlug(req.title),
+    };
+
+    if (req.price || req.price === 0) {
+      courseData["price"] = parseInt(req.price);
+      if (req.price === 0) {
+        courseData["price"] = null;
+      }
+    }
+
+    if (req.crossout_price || req.crossout_price === 0) {
+      courseData["crossOutPrice"] = parseInt(req.crossout_price);
+      if (req.crossout_price === 0) {
+        courseData["crossOutPrice"] = null;
+      }
+    }
+
     course = await prisma.course.update({
       where: {
         id: parseInt(params.courseId),
         adminId: admin.id,
       },
-      data: {
-        title: req.title,
-        description: req.description,
-        price: parseInt(req.price),
-        slug: createSlug(req.title),
-      },
+      data: courseData,
       select: {
         slug: true,
         title: true,
         description: true,
         price: true,
+        crossOutPrice: true,
+        image: true,
       },
     });
   } catch (e) {
