@@ -19,6 +19,7 @@ model User {
   createdAt       DateTime      @default(now())
   sessions        Session[]
   verifyEmails    VerifyEmail[]
+  enrollments     Enrollment[]
 }
 
 model Session {
@@ -60,6 +61,17 @@ model Admin {
   courses         Course[]
 }
 
+model Enrollment {
+    enrollmentId    Int @id @unique @default(autoincrement())
+    user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId          String
+    //order           Order? @relation(fields: [orderId], references: [orderId])
+    //orderId         String? @unique
+    course          Course @relation(fields: [courseId], references: [id])
+    courseId        Int   
+    createdAt     DateTime @default(now())
+    @@unique([userId, courseId])
+}
 model Course {
   id            Int      @id @unique @default(autoincrement())
   slug          String   @unique
@@ -72,7 +84,7 @@ model Course {
   parts         Part[]
   admin         Admin?    @relation(fields: [adminId], references: [id])
   adminId       String?
-  // enrollments   Enrollment[]
+  enrollments   Enrollment[]
 }
 model Part {
   id                Int      @id @unique @default(autoincrement())
