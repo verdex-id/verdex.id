@@ -1,26 +1,11 @@
 -- CreateTable
-CREATE TABLE `User` (
-    `id` VARCHAR(191) NOT NULL,
-    `fullName` VARCHAR(191) NOT NULL,
-    `hashedPassword` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-    `isEmailVerified` BOOLEAN NOT NULL DEFAULT false,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-
-    UNIQUE INDEX `User_id_key`(`id`),
-    UNIQUE INDEX `User_email_key`(`email`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Session` (
     `id` VARCHAR(191) NOT NULL,
     `refreshToken` TEXT NOT NULL,
     `isBlocked` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiredAt` DATETIME(3) NOT NULL,
-    `userId` VARCHAR(191) NULL,
-    `adminId` VARCHAR(191) NULL,
+    `adminId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Session_id_key`(`id`),
     PRIMARY KEY (`id`)
@@ -34,8 +19,7 @@ CREATE TABLE `VerifyEmail` (
     `isUsed` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiredAt` DATETIME(3) NOT NULL,
-    `userId` VARCHAR(191) NULL,
-    `adminId` VARCHAR(191) NULL,
+    `adminId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `VerifyEmail_id_key`(`id`),
     PRIMARY KEY (`id`)
@@ -56,18 +40,6 @@ CREATE TABLE `Admin` (
     UNIQUE INDEX `Admin_image_key`(`image`),
     UNIQUE INDEX `Admin_email_key`(`email`),
     PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Enrollment` (
-    `enrollmentId` INTEGER NOT NULL AUTO_INCREMENT,
-    `userId` VARCHAR(191) NOT NULL,
-    `courseId` INTEGER NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-
-    UNIQUE INDEX `Enrollment_enrollmentId_key`(`enrollmentId`),
-    UNIQUE INDEX `Enrollment_userId_courseId_key`(`userId`, `courseId`),
-    PRIMARY KEY (`enrollmentId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -116,22 +88,10 @@ CREATE TABLE `Banner` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Session` ADD CONSTRAINT `Session_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `Admin`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `VerifyEmail` ADD CONSTRAINT `VerifyEmail_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `VerifyEmail` ADD CONSTRAINT `VerifyEmail_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `Admin`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Enrollment` ADD CONSTRAINT `Enrollment_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Enrollment` ADD CONSTRAINT `Enrollment_courseId_fkey` FOREIGN KEY (`courseId`) REFERENCES `Course`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Course` ADD CONSTRAINT `Course_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `Admin`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
