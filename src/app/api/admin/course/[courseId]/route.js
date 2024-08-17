@@ -23,9 +23,8 @@ export async function GET(req, { params }) {
         slug: true,
         title: true,
         description: true,
-        price: true,
-        crossOutPrice: true,
         image: true,
+        createdAt: true,
         admin: {
           select: {
             fullName: true,
@@ -118,12 +117,6 @@ export async function PUT(request, { params }) {
     const schema = Joi.object({
       title: Joi.string().min(2).max(100).required(),
       description: Joi.string().min(10).max(3_000).required(),
-      crossout_price: Joi.number().min(0).max(1_000_000).integer(),
-      price: Joi.alternatives().conditional("crossout_price", {
-        not: null,
-        then: Joi.number().min(0).max(1_000_000).integer().required(),
-        otherwise: Joi.number().min(0).max(1_000_000).integer(),
-      }),
     });
 
     let req = await request.json();
@@ -139,20 +132,6 @@ export async function PUT(request, { params }) {
       slug: createSlug(req.title),
     };
 
-    if (req.price || req.price === 0) {
-      courseData["price"] = parseInt(req.price);
-      if (req.price === 0) {
-        courseData["price"] = null;
-      }
-    }
-
-    if (req.crossout_price || req.crossout_price === 0) {
-      courseData["crossOutPrice"] = parseInt(req.crossout_price);
-      if (req.crossout_price === 0) {
-        courseData["crossOutPrice"] = null;
-      }
-    }
-
     course = await prisma.course.update({
       where: {
         id: parseInt(params.courseId),
@@ -163,8 +142,6 @@ export async function PUT(request, { params }) {
         slug: true,
         title: true,
         description: true,
-        price: true,
-        crossOutPrice: true,
         image: true,
       },
     });

@@ -22,8 +22,7 @@ export async function GET() {
         title: true,
         description: true,
         image: true,
-        price: true,
-        crossOutPrice: true,
+        createdAt: true,
       },
     });
   } catch (e) {
@@ -46,15 +45,14 @@ export async function GET() {
 export async function POST(request) {
   let course;
   try {
+    const admin = await fetchAdminIfAuthorized();
+    if (admin.error) {
+      throw new FailError(admin.error, admin.errorCode);
+    }
+
     const schema = Joi.object({
       title: Joi.string().min(2).max(100).required(),
       description: Joi.string().min(10).max(3_000).required(),
-      crossout_price: Joi.number().min(500).max(1_000_000).integer(),
-      price: Joi.alternatives().conditional("crossout_price", {
-        not: null,
-        then: Joi.number().min(500).max(1_000_000).integer().required(),
-        otherwise: Joi.number().min(500).max(1_000_000).integer(),
-      }),
     });
 
     let req = await request.json();
@@ -64,25 +62,12 @@ export async function POST(request) {
     }
     req = req.value;
 
-    const admin = await fetchAdminIfAuthorized();
-    if (admin.error) {
-      throw new FailError(admin.error, admin.errorCode);
-    }
-
     const courseData = {
       title: req.title,
       description: req.description,
       slug: createSlug(req.title),
       adminId: admin.admin.id,
     };
-
-    if (req.price) {
-      courseData["price"] = parseInt(req.price);
-    }
-
-    if (req.crossout_price) {
-      courseData["crossOutPrice"] = parseInt(req.crossout_price);
-    }
 
     course = await prisma.course.create({
       data: courseData,
@@ -91,8 +76,7 @@ export async function POST(request) {
         slug: true,
         title: true,
         description: true,
-        price: true,
-        crossOutPrice: true,
+        createdAt: true,
       },
     });
   } catch (e) {
