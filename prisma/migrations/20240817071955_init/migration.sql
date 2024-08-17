@@ -49,8 +49,6 @@ CREATE TABLE `Course` (
     `title` VARCHAR(191) NOT NULL,
     `description` VARCHAR(3000) NULL,
     `image` VARCHAR(191) NULL,
-    `price` INTEGER NULL,
-    `crossOutPrice` INTEGER NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `adminId` VARCHAR(191) NULL,
 
@@ -65,7 +63,6 @@ CREATE TABLE `Part` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `slug` VARCHAR(191) NOT NULL,
     `title` VARCHAR(191) NOT NULL,
-    `requiresPurchase` BOOLEAN NOT NULL DEFAULT false,
     `url` VARCHAR(191) NOT NULL,
     `index` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
