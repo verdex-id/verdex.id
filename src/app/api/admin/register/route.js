@@ -21,13 +21,14 @@ export async function POST(request) {
     email: Joi.string().email().required(),
   });
 
-  const req = await request.json();
-  const invalidReq = schema.validate(req);
-  if (invalidReq.error) {
+  let req = await request.json();
+  req = schema.validate(req);
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
+  req = req.value;
 
   const hashedPassword = await hashPassword(req.password);
   if (!hashedPassword) {
@@ -37,13 +38,12 @@ export async function POST(request) {
   let admin;
 
   try {
-    await prisma.$transaction(async (tx) => {
-      const expirationTime = new Date(
-        new Date().getTime() +
-        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
-      );
-      const secretCode = generateRandomString(32);
+    const expirationTime = new Date(
+      new Date().getTime() + process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+    );
+    const secretCode = generateRandomString(32);
 
+    await prisma.$transaction(async (tx) => {
       admin = await tx.admin.create({
         data: {
           fullName: req.full_name,
@@ -80,6 +80,7 @@ export async function POST(request) {
       }
     });
   } catch (e) {
+    console.log(e)
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       return NextResponse.json(...failResponse(prismaErrorCode[e.code], 409));
     }

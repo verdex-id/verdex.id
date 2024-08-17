@@ -10,28 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String        @id @unique @default(uuid())
-  fullName        String
-  hashedPassword  String
-  email           String        @unique
-  isEmailVerified Boolean       @default(false)
-  createdAt       DateTime      @default(now())
-  sessions        Session[]
-  verifyEmails    VerifyEmail[]
-  enrollments     Enrollment[]
-}
-
 model Session {
   id           String   @id @unique @default(uuid())
   refreshToken String   @default(uuid()) @db.Text
   isBlocked    Boolean  @default(false)
   createdAt    DateTime @default(now())
   expiredAt    DateTime
-  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String?
-  admin        Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  adminId      String?
+  admin        Admin   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId      String
 }
 
 model VerifyEmail {
@@ -41,10 +27,8 @@ model VerifyEmail {
   isUsed     Boolean  @default(false)
   createdAt  DateTime @default(now())
   expiredAt  DateTime
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  userId     String?
-  adminId    String?
+  admin      Admin   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId    String
 }
 
 model Admin {
@@ -61,17 +45,6 @@ model Admin {
   courses         Course[]
 }
 
-model Enrollment {
-    enrollmentId    Int @id @unique @default(autoincrement())
-    user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId          String
-    //order           Order? @relation(fields: [orderId], references: [orderId])
-    //orderId         String? @unique
-    course          Course @relation(fields: [courseId], references: [id])
-    courseId        Int   
-    createdAt     DateTime @default(now())
-    @@unique([userId, courseId])
-}
 model Course {
   id            Int      @id @unique @default(autoincrement())
   slug          String   @unique
@@ -84,8 +57,8 @@ model Course {
   parts         Part[]
   admin         Admin?    @relation(fields: [adminId], references: [id])
   adminId       String?
-  enrollments   Enrollment[]
 }
+
 model Part {
   id                Int      @id @unique @default(autoincrement())
   slug              String   @unique
@@ -97,6 +70,8 @@ model Part {
   course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId          Int
 }
+
+
 
 model Banner {
   bannerId         Int      @id @unique @default(autoincrement())

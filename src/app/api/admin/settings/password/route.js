@@ -1,15 +1,22 @@
-import { headers } from "next/headers";
 import { Prisma } from "@prisma/client";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
-import { authPayloadAccountId } from "@/middleware";
 import { comparePassword, hashPassword } from "@/lib/password";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { fetchAdminIfAuthorized } from "@/utils/check-admin";
 
 export async function PUT(request) {
-  const payloadAdminId = headers().get(authPayloadAccountId);
+  let admin = await fetchAdminIfAuthorized();
+  if (admin.error) {
+    return NextResponse.json(...failResponse(admin.error, admin.errorCode));
+  }
 
+  admin = admin.admin;
+
+  if (!admin) {
+    return NextResponse.json(...errorResponse());
+  }
   const schema = Joi.object({
     password: Joi.string().required(),
     new_password: Joi.string()
@@ -18,23 +25,14 @@ export async function PUT(request) {
       .required(),
   });
 
-  const req = await request.json();
-
-  const invalidReq = schema.validate(req);
-  if (invalidReq.error) {
+  let req = await request.json();
+  req = schema.validate(req);
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
-
-  let admin = await prisma.admin.findUnique({
-    where: {
-      id: payloadAdminId,
-    },
-  });
-  if (!admin) {
-    return NextResponse.json(...errorResponse());
-  }
+  req = req.value;
 
   const isCorrectPassword = await comparePassword(
     req.password,

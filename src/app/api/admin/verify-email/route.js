@@ -6,24 +6,24 @@ import prisma from "@/lib/prisma";
 
 export async function GET(request) {
   const schema = Joi.object({
-    verifyEmailId: Joi.string().required(),
-    secretCode: Joi.string().required(),
+    verify_email_id: Joi.string().required(),
+    secret_code: Joi.string().required(),
   });
 
   const { searchParams } = new URL(request.url);
   const verifyEmailId = searchParams.get("verify_email_id");
   const secretCode = searchParams.get("secret_code");
 
-  const invalidReq = schema.validate({
-    verifyEmailId: verifyEmailId,
-    secretCode: secretCode,
+  let req = schema.validate({
+    verify_email_id: verifyEmailId,
+    secret_code: secretCode,
   });
-
-  if (invalidReq.error) {
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 400, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
+  req = req.value;
 
   let admin;
 
@@ -31,8 +31,8 @@ export async function GET(request) {
     await prisma.$transaction(async (tx) => {
       const verifyEmail = await tx.verifyEmail.update({
         where: {
-          id: verifyEmailId,
-          secretCode: secretCode,
+          id: req.verify_email_id,
+          secretCode: req.secret_code,
           isUsed: false,
         },
         data: {
@@ -49,8 +49,8 @@ export async function GET(request) {
         },
         select: {
           email: true,
-          isEmailVerified: true
-        }
+          isEmailVerified: true,
+        },
       });
     });
   } catch (e) {

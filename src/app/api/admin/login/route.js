@@ -4,6 +4,7 @@ import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import Joi from "joi";
 import { comparePassword } from "@/lib/password";
 import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export async function POST(request) {
   const schema = Joi.object({
@@ -11,14 +12,14 @@ export async function POST(request) {
     email: Joi.string().email().required(),
   });
 
-  const req = await request.json();
-
-  const invalidReq = schema.validate(req);
-  if (invalidReq.error) {
+  let req = await request.json();
+  req = schema.validate(req);
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 400, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
+  req = req.value;
 
   const admin = await prisma.admin.findUnique({
     where: {
@@ -97,5 +98,12 @@ export async function POST(request) {
       created_at: admin.createdAt,
     },
   };
+
+  const cookie = cookies();
+
+  cookie.set("session_id", res.session_id);
+  cookie.set("access_token", res.access_token);
+  cookie.set("refresh_token", res.refresh_token);
+
   return NextResponse.json(...successResponse(res));
 }

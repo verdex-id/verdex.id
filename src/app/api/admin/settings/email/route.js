@@ -1,44 +1,38 @@
-import { headers } from "next/headers";
 import { Prisma } from "@prisma/client";
 import { generateRandomString } from "@/utils/random";
 import { sendEmailVerification } from "@/services/email";
 import { prismaErrorCode } from "@/utils/prisma";
 import Joi from "joi";
 import { failResponse, successResponse, errorResponse } from "@/utils/response";
-import { authPayloadAccountId } from "@/middleware";
 import { comparePassword } from "@/lib/password";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { fetchAdminIfAuthorized } from "@/utils/check-admin";
 
 export async function PUT(request) {
-  const payloadAdminId = headers().get(authPayloadAccountId);
+  let admin = await fetchAdminIfAuthorized();
+  if (admin.error) {
+    return NextResponse.json(...failResponse(admin.error, admin.errorCode));
+  }
 
-  const req = await request.json();
+  admin = admin.admin;
 
   let schema = Joi.object({
     password: Joi.string().required(),
     new_email: Joi.string().email().required(),
   });
 
-  const invalidReq = schema.validate(req);
-  if (invalidReq.error) {
+  let req = await request.json();
+  req = schema.validate(req);
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 403, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
-
-  let admin = await prisma.admin.findUnique({
-    where: {
-      id: payloadAdminId,
-    },
-  });
+  req = req.value;
 
   if (admin.email === req.new_email) {
     return NextResponse.json(...failResponse("No changes were made.", 400));
-  }
-
-  if (!admin) {
-    return NextResponse.json(...errorResponse());
   }
 
   const isCorrectPassword = await comparePassword(
@@ -50,15 +44,16 @@ export async function PUT(request) {
     return NextResponse.json(...failResponse("Password incorrect.", 401));
   }
 
-  try {
-    await prisma.$transaction(async (tx) => {
-      const expirationTime = new Date(
-        new Date().getTime() +
-        process.env.EMAIL_VERIFICATION_DURATION * 3600000,
-      );
-      const secretCode = generateRandomString(32);
+  let newAdmin;
 
-      admin = await tx.admin.update({
+  try {
+    const expirationTime = new Date(
+      new Date().getTime() + process.env.EMAIL_VERIFICATION_DURATION * 3600000,
+    );
+    const secretCode = generateRandomString(32);
+
+    await prisma.$transaction(async (tx) => {
+      newAdmin = await tx.admin.update({
         where: {
           id: admin.id,
           NOT: {
@@ -73,15 +68,15 @@ export async function PUT(request) {
 
       const verifyEmail = await tx.verifyEmail.create({
         data: {
-          adminId: admin.id,
-          email: admin.email,
+          adminId: newAdmin.id,
+          email: newAdmin.email,
           secretCode: secretCode,
           expiredAt: expirationTime,
         },
       });
 
       const info = await sendEmailVerification(
-        admin.email,
+        newAdmin.email,
         `${process.env.BASE_URL}/api/admin/verify-email?verify_email_id=${verifyEmail.id}&secret_code=${verifyEmail.secretCode}`,
       );
 
@@ -101,5 +96,5 @@ export async function PUT(request) {
     );
   }
 
-  return NextResponse.json(...successResponse({ email: admin.email }));
+  return NextResponse.json(...successResponse({ email: newAdmin.email }));
 }
