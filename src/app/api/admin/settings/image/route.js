@@ -1,28 +1,19 @@
 import prisma from "@/lib/prisma";
-import { authPayloadAccountId } from "@/middleware";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import { utapi, utapiBaseURL } from "@/lib/uploadthing";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { fetchAdminIfAuthorized } from "@/utils/check-admin";
 
 export async function POST(request) {
   const sizeLimit = 2 * 1024 * 1024;
   const imageType = "image";
 
-  const payloadAdminId = headers().get(authPayloadAccountId);
-
-  let admin = await prisma.admin.findUnique({
-    where: { id: payloadAdminId, isBlocked: false, isEmailVerified: true },
-  });
-
-  if (!admin) {
-    return NextResponse.json(
-      ...failResponse(
-        "Unauthorized account: You do not have permission to perform this action.",
-        401,
-      ),
-    );
+  let admin = await fetchAdminIfAuthorized();
+  if (admin.error) {
+    return NextResponse.json(...failResponse(admin.error, admin.errorCode));
   }
+
+  admin = admin.admin;
 
   let formData;
   try {
@@ -39,7 +30,7 @@ export async function POST(request) {
     return NextResponse.json(...errorResponse());
   }
 
-  const file = formData.get("file");
+  const file = formData.get("image_file");
 
   if (!file) {
     return NextResponse.json(...errorResponse());

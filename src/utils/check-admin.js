@@ -18,7 +18,7 @@ export async function fetchAdminIfAuthorized() {
   let admin;
   try {
     admin = await prisma.admin.findUnique({
-      where: { id: payloadAdminId },
+      where: { id: payloadAdminId, isBlocked: false, isEmailVerified: true },
     });
   } catch (e) {
     if (
