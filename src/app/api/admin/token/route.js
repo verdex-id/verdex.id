@@ -5,20 +5,22 @@ import Joi from "joi";
 import { errorResponse, failResponse, successResponse } from "@/utils/response";
 import { prismaErrorCode } from "@/utils/prisma";
 import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export async function POST(request) {
   const schema = Joi.object({
     refresh_token: Joi.string().required(),
   });
 
-  const req = await request.json();
-
-  const invalidReq = schema.validate(req);
-  if (invalidReq.error) {
+  let req = await request.json();
+  req = schema.validate(req);
+  if (req.error) {
     return NextResponse.json(
-      ...failResponse("Invalid request format.", 400, invalidReq.error.details),
+      ...failResponse("Invalid request format.", 403, req.error.details),
     );
   }
+  req = req.value;
+
   const [isValid, RTPayload] = await verifyToken(req.refresh_token);
 
   if (!isValid) {
@@ -78,6 +80,9 @@ export async function POST(request) {
     access_token: newAccessToken,
     access_token_expire_at: NATPayload.expiredAt,
   };
+
+  const cookie = cookies();
+  cookie.set("access_token", res.access_token);
 
   return NextResponse.json(...successResponse(res));
 }
