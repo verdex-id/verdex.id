@@ -47,6 +47,20 @@ export async function POST(request, { params }) {
       );
     }
 
+    course = await prisma.course.findUnique({
+      where: {
+        id: parseInt(params.courseId),
+        adminId: admin.id,
+      },
+      select: {
+        image: true,
+      },
+    });
+
+    if (course.image) {
+      await utapi.deleteFiles(course.image);
+    }
+
     const upload = await utapi.uploadFiles(file);
 
     course = await prisma.course.update({
@@ -61,8 +75,6 @@ export async function POST(request, { params }) {
         slug: true,
         title: true,
         description: true,
-        price: true,
-        crossOutPrice: true,
         image: true,
       },
     });

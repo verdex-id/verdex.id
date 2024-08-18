@@ -51,8 +51,6 @@ model Course {
   title         String   @unique
   description   String?  @db.VarChar(3000)
   image         String?
-  price         Int?
-  crossOutPrice Int?
   createdAt     DateTime @default(now())
   parts         Part[]
   admin         Admin?    @relation(fields: [adminId], references: [id])
@@ -63,7 +61,6 @@ model Part {
   id                Int      @id @unique @default(autoincrement())
   slug              String   @unique
   title             String   @unique
-  requiresPurchase  Boolean @default(false)
   url               String   
   index             Int
   createdAt         DateTime @default(now())
@@ -78,3 +75,4 @@ model Banner {
   image             String
   bannerUrl        String?
 }
+

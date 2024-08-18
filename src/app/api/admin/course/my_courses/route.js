@@ -22,7 +22,8 @@ export async function GET() {
         slug: true,
         title: true,
         description: true,
-        price: true,
+        image: true,
+        createdAt: true,
       },
     });
   } catch (e) {

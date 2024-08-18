@@ -22,7 +22,6 @@ export async function GET(req, { params }) {
         slug: true,
         title: true,
         url: true,
-        requiresPurchase: true,
         index: true,
         createdAt: true,
         courseId: true,
@@ -52,6 +51,11 @@ export async function GET(req, { params }) {
 export async function PATCH(request, { params }) {
   let updatedPart;
   try {
+    const admin = await fetchAdminIfAuthorized();
+    if (admin.error) {
+      throw new FailError(admin.error, admin.errorCode);
+    }
+
     const schema = Joi.object({
       title: Joi.string()
         .pattern(/^[a-zA-Z0-9\s_()&/\[\].,=-]+$/)
@@ -59,7 +63,6 @@ export async function PATCH(request, { params }) {
         .max(70)
         .required(),
       url: Joi.string().uri().required(),
-      require_purchase: Joi.boolean().allow("true", "false").required(),
       index: Joi.number().min(1),
     });
 
@@ -70,11 +73,6 @@ export async function PATCH(request, { params }) {
     }
     req = req.value;
 
-    const admin = await fetchAdminIfAuthorized();
-    if (admin.error) {
-      throw new FailError(admin.error, admin.errorCode);
-    }
-
     if (req.index) {
       let newIndex = req.index;
       const targetedPart = await prisma.part.findUnique({
@@ -84,10 +82,14 @@ export async function PATCH(request, { params }) {
         select: {
           index: true,
           id: true,
+          courseId: true,
         },
       });
 
       let lastIndex = await prisma.part.findFirst({
+        where: {
+          courseId: targetedPart.courseId,
+        },
         orderBy: {
           index: "desc",
         },
@@ -110,13 +112,13 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
-              requiresPurchase: req.require_purchase,
               index: newIndex,
             },
           });
 
           await tx.part.updateMany({
             where: {
+              courseId: targetedPart.courseId,
               index: {
                 gt: targetedPart.index,
                 lt: newIndex + 1,
@@ -144,13 +146,13 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
-              requiresPurchase: req.require_purchase,
               index: newIndex,
             },
           });
 
           await tx.part.updateMany({
             where: {
+              courseId: targetedPart.courseId,
               index: {
                 lt: targetedPart.index,
                 gt: newIndex - 1,
@@ -174,11 +176,10 @@ export async function PATCH(request, { params }) {
               title: req.title,
               slug: createSlug(req.title),
               url: req.url,
-              requiresPurchase: req.require_purchase,
             },
           });
         }
-      // console.log(updatedPart);
+        // console.log(updatedPart);
       });
     } else {
       updatedPart = await prisma.part.update({
@@ -189,7 +190,6 @@ export async function PATCH(request, { params }) {
           title: req.title,
           slug: createSlug(req.title),
           url: req.url,
-          requiresPurchase: req.require_purchase,
         },
       });
     }
@@ -218,7 +218,21 @@ export async function DELETE(req, { params }) {
       throw new FailError(admin.error, admin.errorCode);
     }
 
+    const targetedPart = await prisma.part.findUnique({
+      where: {
+        id: parseInt(params.partId),
+      },
+      select: {
+        index: true,
+        id: true,
+        courseId: true,
+      },
+    });
+
     let lastIndex = await prisma.part.findFirst({
+      where: {
+        courseId: targetedPart.courseId,
+      },
       orderBy: {
         index: "desc",
       },
@@ -228,12 +242,10 @@ export async function DELETE(req, { params }) {
       },
     });
 
-    const targetPartId = parseInt(params.partId);
-
-    if (lastIndex.id === targetPartId) {
+    if (lastIndex.id === targetedPart.id) {
       deletedPart = await prisma.part.delete({
         where: {
-          id: targetPartId,
+          id: targetedPart.id,
         },
         select: {
           id: true,
@@ -248,7 +260,7 @@ export async function DELETE(req, { params }) {
       prisma.$transaction(async (tx) => {
         deletedPart = await prisma.part.delete({
           where: {
-            id: targetPartId,
+            id: targetedPart.id,
           },
           select: {
             id: true,
@@ -262,6 +274,7 @@ export async function DELETE(req, { params }) {
 
         await tx.part.updateMany({
           where: {
+            courseId: targetedPart.courseId,
             index: {
               gt: deletedPart.index,
             },
