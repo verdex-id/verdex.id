@@ -5,36 +5,28 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  let course;
+  let part;
   try {
-    course = await prisma.course.findUnique({
-      where: { slug: params.slug },
+    part = await prisma.part.findUnique({
+      where: {
+        slug: params.partSlug,
+      },
       select: {
         slug: true,
         title: true,
-        description: true,
-        image: true,
-        admin: {
-          select: {
-            fullName: true,
-          },
-        },
-        parts: {
+        url: true,
+        index: true,
+        course: {
           select: {
             slug: true,
             title: true,
-            //url: true,
-            index: true,
-          },
-          orderBy: {
-            index: "asc",
           },
         },
       },
     });
 
-    if (!course) {
-      return NextResponse.json(...failResponse("Course not found.", 404));
+    if (!part) {
+      throw new FailError("Part not found.", 404);
     }
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -50,5 +42,5 @@ export async function GET(req, { params }) {
     return NextResponse.json(...errorResponse());
   }
 
-  return NextResponse.json(...successResponse({ course }));
+  return NextResponse.json(...successResponse(part));
 }
