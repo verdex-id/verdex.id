@@ -1,47 +1,54 @@
 import prisma from "@/lib/prisma";
-import { failResponse, successResponse } from "@/utils/response";
+import { FailError } from "@/utils/custom-error";
+import { errorResponse, failResponse, successResponse } from "@/utils/response";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const course = await prisma.course.findUnique({
-    where: { slug: params.slug },
-    select: {
-      slug: true,
-      title: true,
-      description: true,
-      price: true,
-      admin: {
-        select: {
-          fullName: true,
+  let course;
+  try {
+    course = await prisma.course.findUnique({
+      where: { slug: params.slug },
+      select: {
+        slug: true,
+        title: true,
+        description: true,
+        image: true,
+        admin: {
+          select: {
+            fullName: true,
+          },
+        },
+        parts: {
+          select: {
+            slug: true,
+            title: true,
+            url: true,
+            index: true,
+          },
+          orderBy: {
+            index: "asc",
+          },
         },
       },
-      parts: {
-        select: {
-          slug: true,
-          title: true,
-          url: true,
-          index: true,
-          createdAt: true,
-        },
-        orderBy: {
-          index: "asc",
-        },
-      },
-    },
-  });
+    });
 
-  if (!course) {
-    return NextResponse.json(...failResponse("Course not found.", 404));
+    if (!course) {
+      return NextResponse.json(...failResponse("Course not found.", 404));
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        ...failResponse("Invalid request", 409, e.message),
+      );
+    }
+
+    if (e instanceof FailError) {
+      return NextResponse.json(...failResponse(e.message, e.code, e.detail));
+    }
+
+    return NextResponse.json(...errorResponse());
   }
 
-  const res = {
-    slug: course.slug,
-    title: course.title,
-    description: course.description,
-    price: course.price,
-    creator: course.admin.fullName,
-    parts: course.parts
-  };
-
-  return NextResponse.json(...successResponse(res));
+  return NextResponse.json(...successResponse({ course }));
 }
